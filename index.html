@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REG Rejections Summary — April 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6f9;
+      color: #1a1a2e;
+      padding: 32px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header { margin-bottom: 32px; }
+    header h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+    header p  { font-size: 13px; color: #666; margin-top: 4px; }
+
+    /* ── Nav tabs ── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid #e8eaf0; }
+    .tab {
+      padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; background: none; color: #777; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: color .15s;
+    }
+    .tab.active { color: #1d4ed8; border-bottom-color: #1d4ed8; }
+    .tab:hover:not(.active) { color: #333; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section card ── */
+    .section {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #e8eaf0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-header h2 { font-size: 14px; font-weight: 700; }
+
+    .badge {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 12px; background: #e8eaf0; color: #555;
+    }
+    .badge.cx  { background: #dbeafe; color: #1d4ed8; }
+    .badge.isa { background: #d1fae5; color: #065f46; }
+    .badge.asr { background: #fef9c3; color: #854d0e; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      background: #f8f9fb; text-align: left; padding: 10px 16px;
+      font-weight: 600; font-size: 12px; color: #555;
+      border-bottom: 1px solid #e8eaf0;
+    }
+    thead th.num { text-align: center; }
+    tbody tr:hover { background: #f8f9fb; }
+    tbody td { padding: 10px 16px; border-bottom: 1px solid #f0f1f5; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    td.num { text-align: center; color: #444; }
+    td.num.zero { color: #ccc; }
+    td.total { text-align: center; font-weight: 700; }
+    td.engineer { font-weight: 500; }
+
+    .workstep-tag {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle;
+    }
+    .tag-asr { background: #fef9c3; color: #854d0e; }
+    .tag-cir { background: #dbeafe; color: #1d4ed8; }
+    .tag-cs  { background: #d1fae5; color: #065f46; }
+
+    /* heat cells */
+    .heat-1 { background: #fff7ed; }
+    .heat-2 { background: #ffedd5; }
+    .heat-3 { background: #fed7aa; }
+    .heat-4 { background: #fb923c; color: #fff; font-weight: 700; }
+
+    .grand-total-row td {
+      background: #f0f4ff; font-weight: 700; border-top: 2px solid #c7d2fe;
+    }
+
+    /* repeat badge */
+    .repeat-badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 10px; margin-left: 6px;
+      background: #fee2e2; color: #991b1b; vertical-align: middle;
+    }
+    .repeat-badge.med { background: #fef3c7; color: #92400e; }
+    .repeat-badge.low { background: #f3f4f6; color: #6b7280; }
+
+    /* callouts */
+    .callouts {
+      padding: 16px 20px; border-top: 1px solid #e8eaf0; background: #fafbfc;
+    }
+    .callouts h3 {
+      font-size: 12px; font-weight: 700; color: #555;
+      margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .callout-list { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+    .callout-list li {
+      font-size: 12px; background: #fff; border: 1px solid #e8eaf0;
+      border-radius: 6px; padding: 6px 12px; color: #333; flex: 1 1 calc(50% - 4px);
+    }
+    .callout-list li strong { color: #1a1a2e; }
+
+    /* ── Bucket cards ── */
+    .bucket-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 16px; padding: 20px;
+    }
+    .bucket-card {
+      border: 1px solid #e8eaf0; border-radius: 8px; overflow: hidden; background: #fff;
+    }
+    .bucket-card-header {
+      padding: 12px 16px; display: flex; justify-content: space-between; align-items: flex-start;
+      border-bottom: 1px solid #e8eaf0;
+    }
+    .bucket-title { font-size: 13px; font-weight: 700; }
+    .bucket-count {
+      font-size: 22px; font-weight: 800; line-height: 1;
+      color: #1d4ed8; min-width: 36px; text-align: right;
+    }
+    .bucket-body { padding: 12px 16px; font-size: 12px; }
+    .bucket-body .workstep-labels { margin-bottom: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+    .bucket-body .example-list {
+      list-style: none; color: #555; line-height: 1.6;
+    }
+    .bucket-body .example-list li::before { content: "› "; color: #aaa; }
+
+    .improve-box {
+      margin-top: 10px; padding: 8px 12px;
+      background: #f0fdf4; border-left: 3px solid #16a34a;
+      border-radius: 0 4px 4px 0; font-size: 12px; color: #166534;
+    }
+    .improve-box strong { display: block; margin-bottom: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── Repeat projects table ── */
+    .repeat-count-cell {
+      text-align: center; font-weight: 700;
+    }
+    .repeat-count-cell.r-high { color: #dc2626; }
+    .repeat-count-cell.r-med  { color: #d97706; }
+    .repeat-count-cell.r-low  { color: #6b7280; }
+
+    .comment-cell {
+      font-size: 11px; color: #555; max-width: 340px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .month-pill {
+      display: inline-block; font-size: 10px; padding: 1px 6px;
+      border-radius: 8px; font-weight: 600;
+    }
+    .month-jan { background: #ede9fe; color: #5b21b6; }
+    .month-feb { background: #dbeafe; color: #1e40af; }
+    .month-mar { background: #d1fae5; color: #065f46; }
+    .month-apr { background: #fce7f3; color: #9d174d; }
+
+    /* collapse/expand for repeat rows */
+    .proj-header { cursor: pointer; }
+    .proj-header:hover td { background: #f0f4ff !important; }
+    .proj-detail-row td { background: #fafbfd; padding: 6px 16px; font-size: 12px; }
+    .proj-detail-row { display: none; }
+    .proj-detail-row.open { display: table-row; }
+    .chevron { font-size: 10px; margin-left: 6px; color: #999; transition: transform .15s; }
+    .proj-header.expanded .chevron { transform: rotate(90deg); }
+
+    .detail-inner { padding: 6px 0; }
+    .detail-row {
+      display: flex; gap: 12px; padding: 4px 0;
+      border-bottom: 1px solid #eef; font-size: 11px; align-items: flex-start;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-month { width: 56px; flex-shrink: 0; }
+    .detail-ws    { width: 170px; flex-shrink: 0; color: #555; }
+    .detail-comment { color: #333; flex: 1; }
+
+    /* bucket color strips */
+    .bc-height   { border-left: 4px solid #ef4444; }
+    .bc-coords   { border-left: 4px solid #f97316; }
+    .bc-owner    { border-left: 4px solid #8b5cf6; }
+    .bc-faainfo  { border-left: 4px solid #0ea5e9; }
+    .bc-strtype  { border-left: 4px solid #64748b; }
+    .bc-doc      { border-left: 4px solid #f59e0b; }
+    .bc-sddi     { border-left: 4px solid #ec4899; }
+    .bc-soft     { border-left: 4px solid #a3a3a3; }
+    .bc-usr      { border-left: 4px solid #d4d4d4; }
+    .bc-lpn      { border-left: 4px solid #d97706; }
+    .bc-asrapp   { border-left: 4px solid #92400e; }
+    .bc-psd      { border-left: 4px solid #be185d; }
+    .bc-fstrength{ border-left: 4px solid #7c3aed; }
+    .bc-files    { border-left: 4px solid #047857; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>REG Rejections Summary</h1>
+  <p>Source: April SERegulatoryTrackerALLPROJECTS &nbsp;|&nbsp; April Total Rejection by Month &nbsp;|&nbsp; Jan – Apr 2026 &nbsp;|&nbsp; Excludes CONSTRUCTION_POST_TCN</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview')">Overview</button>
+  <button class="tab" onclick="showTab('buckets')">Rejection Buckets &amp; Recommendations</button>
+  <button class="tab" onclick="showTab('repeats')">Repeat Rejections</button>
+</div>
+
+<!-- ═══════════════════════════════════════ TAB 1: OVERVIEW ═══════════════════════════════════════ -->
+<div id="tab-overview" class="tab-panel active">
+
+  <!-- REG ENG CX -->
+  <div class="section">
+    <div class="section-header">
+      <h2>REG ENG CX</h2>
+      <span class="badge asr">ASR</span>
+      <span class="badge cx">CONSTRUCTION_INITIAL_REVIEW</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Engineer</th>
+          <th>Workstep</th>
+          <th class="num">Jan</th>
+          <th class="num">Feb</th>
+          <th class="num">Mar</th>
+          <th class="num">Apr</th>
+          <th class="num">Total</th>
+          <th class="num">Repeat Projects</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="engineer" rowspan="1">Tamara Gil</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num zero">—</td>
+          <td class="num">5</td>
+          <td class="num zero">—</td>
+          <td class="num heat-4">22</td>
+          <td class="total">27</td>
+          <td class="num"><span class="repeat-badge">3 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Asad Kamran</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num heat-4">20</td>
+          <td class="num zero">—</td>
+          <td class="num">5</td>
+          <td class="num">1</td>
+          <td class="total">26</td>
+          <td class="num"><span class="repeat-badge">4 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Ashutosh Pandey</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num">3</td>
+          <td class="num">2</td>
+          <td class="num heat-3">15</td>
+          <td class="num">4</td>
+          <td class="total">24</td>
+          <td class="num"><span class="repeat-badge med">5 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer" rowspan="2">Yousuf Moiz</td>
+          <td><span class="workstep-tag tag-asr">ASR</span></td>
+          <td class="num">3</td>
+          <td class="num">7</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">10</td>
+          <td class="num" rowspan="2"><span class="repeat-badge">5 projects</span></td>
+        </tr>
+        <tr>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num heat-2">8</td>
+          <td class="num zero">—</td>
+          <td class="num">2</td>
+          <td class="num">2</td>
+          <td class="total">12</td>
+        </tr>
+        <tr>
+          <td class="engineer">Raja Magunta</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num">7</td>
+          <td class="num heat-3">12</td>
+          <td class="total">19</td>
+          <td class="num"><span class="repeat-badge">4 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Allison Schmidt</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num zero">—</td>
+          <td class="num">4</td>
+          <td class="num">5</td>
+          <td class="num zero">—</td>
+          <td class="total">9</td>
+          <td class="num"><span class="repeat-badge low">2 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Victor Durosomo</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num">6</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num">1</td>
+          <td class="total">7</td>
+          <td class="num"><span class="repeat-badge low">2 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Priyatham Tamma</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num">2</td>
+          <td class="num">4</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">6</td>
+          <td class="num"><span class="repeat-badge low">1 project</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Roma Patel</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num">2</td>
+          <td class="num">2</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">4</td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Shennay Hampton - TEK</td>
+          <td><span class="workstep-tag tag-cir">CIR</span></td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num">2</td>
+          <td class="num zero">—</td>
+          <td class="total">2</td>
+          <td class="num"><span class="repeat-badge low">1 project</span></td>
+        </tr>
+        <tr class="grand-total-row">
+          <td colspan="2">Grand Total</td>
+          <td class="num">44</td>
+          <td class="num">24</td>
+          <td class="num">36</td>
+          <td class="num">42</td>
+          <td class="total">146</td>
+          <td class="num">30+ repeat projects</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callouts">
+      <h3>Key Callouts</h3>
+      <ul class="callout-list">
+        <li><strong>Tamara Gil</strong> — 22 of 27 rejections in April alone; 3 projects with 4–8 rejections each</li>
+        <li><strong>Asad Kamran</strong> — 20 of 26 in January; 4 projects hit repeatedly (up to 8 rejections per project)</li>
+        <li><strong>Yousuf Moiz</strong> — only engineer with both ASR (10) and CIR (12) rejections; 5 repeat projects</li>
+        <li><strong>Raja Magunta</strong> — accelerating; 12 of 19 in April, 4 projects rejected multiple times</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- REG ENG ISA -->
+  <div class="section">
+    <div class="section-header">
+      <h2>REG ENG ISA</h2>
+      <span class="badge isa">CALL_SIGN</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Engineer</th>
+          <th class="num">Jan</th>
+          <th class="num">Feb</th>
+          <th class="num">Mar</th>
+          <th class="num">Apr</th>
+          <th class="num">Total</th>
+          <th class="num">Repeat Projects</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="engineer">Yousuf Moiz</td>
+          <td class="num">4</td>
+          <td class="num">4</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">8</td>
+          <td class="num"><span class="repeat-badge">3 projects</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Belem Rios</td>
+          <td class="num">3</td>
+          <td class="num">2</td>
+          <td class="num">1</td>
+          <td class="num zero">—</td>
+          <td class="total">6</td>
+          <td class="num"><span class="repeat-badge low">1 project</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Mazhar Shahzad</td>
+          <td class="num heat-1">6</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">6</td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Asad Kamran</td>
+          <td class="num">4</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">4</td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Roma Patel</td>
+          <td class="num">3</td>
+          <td class="num">1</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">4</td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Victor Durosomo</td>
+          <td class="num">1</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="total">1</td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
+        </tr>
+        <tr>
+          <td class="engineer">Tamara Gil</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num zero">—</td>
+          <td class="num">1</td>
+          <td class="total">1</td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
+        </tr>
+        <tr class="grand-total-row">
+          <td>Grand Total</td>
+          <td class="num">21</td>
+          <td class="num">7</td>
+          <td class="num">1</td>
+          <td class="num">1</td>
+          <td class="total">30</td>
+          <td class="num">4 repeat projects</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callouts">
+      <h3>Key Callouts</h3>
+      <ul class="callout-list">
+        <li><strong>Yousuf Moiz</strong> — appears across ASR, CIR, and CALL_SIGN; 3 CALL_SIGN projects rejected 2–4× each</li>
+        <li><strong>Mazhar Shahzad</strong> — all 6 concentrated in January; no recurrence since</li>
+        <li><strong>Activity trending down</strong> — 21 in January vs. 1 each in March and April</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /tab-overview -->
+
+<!-- ═══════════════════════════════════════ TAB 2: BUCKETS ═══════════════════════════════════════ -->
+<div id="tab-buckets" class="tab-panel">
+
+  <div class="section">
+    <div class="section-header"><h2>CONSTRUCTION_INITIAL_REVIEW — Rejection Reason Buckets</h2></div>
+    <div class="bucket-grid">
+
+      <div class="bucket-card bc-height">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Height / Elevation Mismatch</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">FUZE ≠ FAA / ASR / Construction Drawings</div>
+          </div>
+          <div class="bucket-count">38</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Tower height in FUZE does not match drawings or FAA</li>
+            <li>Per FAA, ground elevation is X ft — please update FUZE and CDs</li>
+            <li>GE in FUZE does not match CD</li>
+            <li>FAA has height of 349 — ASR has different height, have 3rd party update</li>
+            <li>ASR has height of 210, FAA has 320 — heights do not agree</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Lock in FAA/ASR-verified height and ground elevation in FUZE before submitting CIR. Require 3rd-party height reconciliation sign-off as a pre-submission checklist item. Flag any FUZE-to-CD delta &gt; 0.5 ft as a blocker.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-coords">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Coordinates / Location Mismatch</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">FUZE ≠ FAA / ASR / 1A Survey / CDs</div>
+          </div>
+          <div class="bucket-count">22</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Coordinates/GE in FUZE do not match 1A Survey</li>
+            <li>Coordinates in FUZE do not match FAA, please update</li>
+            <li>Per ADD letter from FAA, coordinates are not plotting on the tower</li>
+            <li>Please update coordinates on CD to match FUZE</li>
+            <li>GE on USR doesn't match 1A survey</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Run a FUZE-vs-FAA coordinate comparison immediately after 1A Survey completion. Add a mandatory field in FUZE requiring the 1A Survey date before CIR submission. A delta &gt; 2 meters should auto-block submission.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-faainfo">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Missing FAA / ASR / FCC Info</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">ASR #, FAA Study #, ASN #, Marking/Lighting absent or wrong</div>
+          </div>
+          <div class="bucket-count">18</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting)</li>
+            <li>Incorrect FAA # in FUZE — please correct</li>
+            <li>Please enter the owner's FAA and ASR</li>
+            <li>The ASR number provided is the application number, not the issued ASR</li>
+            <li>Please enter a valid FAA study in the field</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Add a FUZE validation that verifies ASR # format (issued vs. application) and cross-checks FAA study # against the FAA OE/AAA portal before CIR submission is unlocked. Require structure owner to confirm and provide their ASR # at site acquisition.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-sddi">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Structure Form / SDDI Mismatch</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Submitted form doesn't match FAA filing details</div>
+          </div>
+          <div class="bucket-count">14</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Structure form does not match FAA filing — structure height doesn't match FAA/ASR</li>
+            <li>Structure form does not match FAA filing — please update FUZE coords to match FAA</li>
+            <li>Structure form does not match FAA filing — please update proposed overall height AGL</li>
+            <li>Ground elevation and structure height do not match FAA on structure form</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Auto-populate structure form fields from FUZE data rather than manual entry. Add a pre-submit diff view showing structure form values side-by-side with FAA filing values so engineers can resolve discrepancies before submission.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-owner">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Structure Owner Information Wrong</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Ownership in FUZE conflicts with ASR record</div>
+          </div>
+          <div class="bucket-count">10</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Structure owner info missing/wrong — ASR shows this is a VZW site</li>
+            <li>Structure owner info missing/wrong — ASR shows ATC as the structure owner</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Pull structure owner directly from the ASR lookup at project creation and lock it in FUZE. Flag any manual override of structure owner as requiring Reg Specialist approval before CIR can be submitted.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-doc">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Missing / Expired Document</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">AM certificate expired or required document absent</div>
+          </div>
+          <div class="bucket-count">6</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Missing Document — AM certificate current study is over 6 months old</li>
+            <li>Missing Document — AM certificate needs to be within 6 months</li>
+            <li>Missing Document — AM certificate expired; also ASR height doesn't match</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Add an automated expiry check on AM certificates in FUZE. Alert the engineer and block CIR submission if the certificate is &gt;5 months old, giving a 30-day buffer to order a new study before expiry.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-strtype">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Structure Type Wrong or Missing</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;"></div>
+          </div>
+          <div class="bucket-count">4</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Structure type wrong or missing</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Make structure type a required, validated dropdown in FUZE tied to the ASR structure type code. Prevent CIR submission if the field is blank or set to a placeholder value.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-soft">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Soft Rejection / Market Request</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Pending FAA decision or market-initiated hold</div>
+          </div>
+          <div class="bucket-count">4</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Market request — soft rejection; GE on USR doesn't match 1A survey</li>
+            <li>Soft rejection — FAA requesting structure height be lowered to 234 ft</li>
+            <li>Market request — soft rejection; ASR number is application number only</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Establish a formal "soft rejection" tracking status in FUZE separate from hard rejections. Route soft rejections to a dedicated queue so they don't inflate engineer rejection counts and are resolved through the appropriate FAA/market coordination workflow.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-usr">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Update Station Records (USR) Cascade</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Auto-generated secondary rejections triggered by primary rejection</div>
+          </div>
+          <div class="bucket-count">~60</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>'Update Station Records' Rejected — cascades from any primary CIR rejection</li>
+            <li>'Update Station Records' Approved — logged alongside rejections</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            USR rejections are noise generated by the system when a primary record is rejected — they should not be counted as independent rejections. Filter them from engineer metrics. Addressing the root cause (height, coords, ownership) will eliminate these automatically.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header"><h2>ASR — Rejection Reason Buckets</h2></div>
+    <div class="bucket-grid">
+
+      <div class="bucket-card bc-lpn">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">LPN Issues</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Date wrong, FCC File # missing, document not uploaded</div>
+          </div>
+          <div class="bucket-count">14</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Please amend the LPN date to reflect the latest LPN date; upload new LPN once affidavit is received</li>
+            <li>LPN should reference the FCC File # — please run another one which includes this information</li>
+            <li>The LPN document needs to be uploaded showing what was published in the newspaper</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Build an LPN checklist into the ASR submission workflow: (1) affidavit received and uploaded, (2) FCC File # referenced in LPN, (3) date matches the latest published notice. Block ASR submission until all three are checked. Majority of ASR rejections are from a single project (17048235) — review that project specifically for a systemic LPN process gap.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-asrapp">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Incomplete ASR Application</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Anticipated lighting missing from ASR app</div>
+          </div>
+          <div class="bucket-count">3</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>ASR app does not include anticipated lighting</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Add "Anticipated Lighting" as a mandatory field in the ASR application template with a validation check before submission. Include it on the ASR pre-submission review checklist.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header"><h2>CALL_SIGN — Rejection Reason Buckets</h2></div>
+    <div class="bucket-grid">
+
+      <div class="bucket-card bc-psd">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">PSD Contours Exceed 50 sq mi Unlicensed</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Cannot file PSD — contours extend too far into unlicensed area</div>
+          </div>
+          <div class="bucket-count">13</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>PSD contours extend into &gt;50 sq miles of unlicensed area — cannot currently file PSD</li>
+            <li>DO NOT SUBMIT THIS PSD — contours extend into &gt;50 sq miles of unlicensed area</li>
+            <li>Site extends into &gt;50 sq miles of unlicensed — currently unable to file</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Run a pre-submission unlicensed area contour check against the 50 sq mi threshold before routing to REG ENG ISA. If contours exceed the threshold, place the project in a "PSD Hold" status rather than submitting. Project 17029018 has been rejected 3 months in a row for this same reason — it should be placed on hold, not re-submitted.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-fstrength">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Field Strength / Extension Agreement Insufficient</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">850 MHz SAB or extension agreement issues</div>
+          </div>
+          <div class="bucket-count">5</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>850 Field Strength/Extension Agreement Insufficient — 32 dBu contours extend too far</li>
+            <li>-110 coverage doesn't matter going into the gulf — only 32 SAB matters and it extends too far</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Require RF team to verify 32 dBu SAB contours and produce an extension agreement before CALL_SIGN submission. Add a field strength compliance step to the ISA pre-submission checklist specifically for 850 MHz projects near borders or coastal areas.
+          </div>
+        </div>
+      </div>
+
+      <div class="bucket-card bc-files">
+        <div class="bucket-card-header">
+          <div>
+            <div class="bucket-title">Missing or Wrong Coverage Files</div>
+            <div style="font-size:11px;color:#777;margin-top:3px;">Scatter plots, contour files, or 40 dBu data absent or incorrect</div>
+          </div>
+          <div class="bucket-count">7</div>
+        </div>
+        <div class="bucket-body">
+          <ul class="example-list">
+            <li>Please upload a scatter plot of -110 RSRP with the SAB</li>
+            <li>Please also upload 40 dBu for field strength review</li>
+            <li>Nothing in the Non-PSD zipped folder — delete the ones from December</li>
+            <li>Nothing in the Sorrel Non-PSD zipped folder</li>
+          </ul>
+          <div class="improve-box">
+            <strong>How to Improve</strong>
+            Define a mandatory file package template for CALL_SIGN submissions (scatter plot, 40 dBu contour, Non-PSD zip) and validate that each file is present and non-empty before submission. Stale files from prior months in the package suggest a manual copy-paste process — standardize the upload workflow.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /tab-buckets -->
+
+<!-- ═══════════════════════════════════════ TAB 3: REPEAT REJECTIONS ═══════════════════════════════════════ -->
+<div id="tab-repeats" class="tab-panel">
+  <div class="section">
+    <div class="section-header">
+      <h2>Projects Rejected More Than Once</h2>
+      <span class="badge" style="background:#fee2e2;color:#991b1b;">47 projects</span>
+      <span style="font-size:12px;color:#777;margin-left:8px;">Click a row to expand rejection details</span>
+    </div>
+    <table id="repeat-table">
+      <thead>
+        <tr>
+          <th>Project ID</th>
+          <th>Site Name</th>
+          <th>Engineer</th>
+          <th>Workstep</th>
+          <th class="num">Rejections</th>
+          <th>Months Affected</th>
+          <th>Primary Issue</th>
+        </tr>
+      </thead>
+      <tbody id="repeat-tbody">
+        <!-- populated by JS -->
+      </tbody>
+    </table>
+  </div>
+</div><!-- /tab-repeats -->
+
+<script>
+/* ── Tab switching ── */
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* ── Repeat rejections data ── */
+const repeatData = [
+  { id:'17501882', site:'(see tracker)', eng:'Raja Magunta', ws:'CONSTRUCTION_INITIAL_REVIEW', count:8, months:'April', issue:'Structure Owner Info Wrong (VZW vs ASR)',
+    rows:[
+      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong — this is a VZW site per the ASR'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong, per ASR this is a VZW site'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong — please correct ownership, VZW site per ASR'},
+      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong, per ASR this is a VZW site'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+    ]},
+  { id:'17043458', site:'(see tracker)', eng:'Asad Kamran', ws:'CONSTRUCTION_INITIAL_REVIEW', count:8, months:'January', issue:"Tower height in FUZE doesn't match FAA/ASR",
+    rows:[
+      {m:'January',ws:'CIR',c:"Tower height in FUZE doesn't match the FAA"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"Tower height in FUZE doesn't match ASR — have ATC update ASR height to match filing"},
+      {m:'January',ws:'CIR',c:"Tower height in FUZE doesn't match the FAA"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"Tower height in FUZE doesn't match ASR — have ATC update ASR height to match filing"},
+    ]},
+  { id:'17196480', site:'(see tracker)', eng:'Asad Kamran', ws:'CONSTRUCTION_INITIAL_REVIEW', count:8, months:'January', issue:'ASR height 210 ≠ FAA 320; frequency filing change; AYS ticket opened',
+    rows:[
+      {m:'January',ws:'CIR',c:'Tillman agreed to amend AGL to 210 FT post construction'},
+      {m:'January',ws:'CIR',c:'Opened AYS ticket due to issue closing Initial Review. AYS # INC016071763'},
+      {m:'January',ws:'CIR',c:'Tower height on ASR is 210, FAA shows 320 — heights do not match'},
+      {m:'January',ws:'CIR',c:'Frequency Filing Required changed from No to Yes'},
+      {m:'January',ws:'CIR',c:'Tillman agreed to amend AGL to 210 FT post construction'},
+      {m:'January',ws:'CIR',c:'Opened AYS ticket — INC016071763'},
+      {m:'January',ws:'CIR',c:'Tower height on ASR is 210, FAA shows 320'},
+      {m:'January',ws:'CIR',c:'Frequency Filing Required changed from No to Yes'},
+    ]},
+  { id:'17048235', site:'Jordan_Ranch_SC10', eng:'Yousuf Moiz', ws:'ASR', count:7, months:'February', issue:'LPN missing FCC File #, missing anticipated lighting, LPN doc not uploaded',
+    rows:[
+      {m:'February',ws:'ASR',c:'LPN should reference the FCC File # — please run another one with this info'},
+      {m:'February',ws:'ASR',c:'ASR app does not include anticipated lighting'},
+      {m:'February',ws:'ASR',c:'The LPN document needs to be uploaded showing what was published in the newspaper'},
+      {m:'February',ws:'ASR',c:'LPN should reference the FCC File #'},
+      {m:'February',ws:'ASR',c:'ASR app does not include anticipated lighting'},
+      {m:'February',ws:'ASR',c:'LPN should reference the FCC File #'},
+      {m:'February',ws:'ASR',c:'ASR app does not include anticipated lighting'},
+    ]},
+  { id:'16756073', site:'(see tracker)', eng:'Raja Magunta', ws:'CONSTRUCTION_INITIAL_REVIEW', count:6, months:'April', issue:'GE on USR doesn\'t match 1A survey; soft rejection',
+    rows:[
+      {m:'April',ws:'CIR',c:"'Update Station Records' Approved"},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:"Soft rejection — GE on USR doesn't match 1A survey"},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Approved"},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:"Soft rejection — GE on USR doesn't match 1A survey"},
+    ]},
+  { id:'17519644', site:'(see tracker)', eng:'Allison Schmidt', ws:'CONSTRUCTION_INITIAL_REVIEW', count:6, months:'March', issue:'Structure type wrong or missing',
+    rows:[
+      {m:'March',ws:'CIR',c:'Structure type wrong or missing'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Approved"},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'March',ws:'CIR',c:'Structure type wrong or missing'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Approved"},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
+    ]},
+  { id:'17511869', site:'(see tracker)', eng:'Ashutosh Pandey', ws:'CONSTRUCTION_INITIAL_REVIEW', count:6, months:'Feb, Apr', issue:'FAA coordinates not plotting on tower (ADD letter); update coords on CD',
+    rows:[
+      {m:'February',ws:'CIR',c:'Per ADD letter from FAA, coordinates are not plotting on the tower'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Please update coordinates on CD to match FUZE'},
+      {m:'February',ws:'CIR',c:'Per ADD letter from FAA, coordinates are not plotting on the tower'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Please update coordinates on CD to match FUZE'},
+    ]},
+  { id:'17356886', site:'(see tracker)', eng:'Raja Magunta', ws:'CONSTRUCTION_INITIAL_REVIEW', count:6, months:'April', issue:'Structure form ≠ FAA height; structure owner wrong (ATC per ASR)',
+    rows:[
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA — structure height does not match FAA/ASR'},
+      {m:'April',ws:'CIR',c:'Structure Owner Wrong — ASR shows ATC as structure owner'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA — structure height does not match FAA/ASR'},
+      {m:'April',ws:'CIR',c:'Structure Owner Wrong — ASR shows ATC as structure owner'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+    ]},
+  { id:'16997375', site:'(see tracker)', eng:'Raja Magunta', ws:'CONSTRUCTION_INITIAL_REVIEW', count:6, months:'April', issue:'Coordinates/GE in FUZE ≠ 1A Survey; Airspace does not match FUZE',
+    rows:[
+      {m:'April',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey; Airspace does not match FUZE details'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey; Airspace does not match FUZE details'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'April',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey; Airspace does not match FUZE details'},
+      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+    ]},
+  { id:'17029018', site:'(see tracker)', eng:'Yousuf Moiz (ISA)', ws:'CALL_SIGN', count:4, months:'Jan, Feb, Mar', issue:'PSD contours exceed 50 sq mi unlicensed — rejected 3 months in a row',
+    rows:[
+      {m:'January',ws:'CALL_SIGN',c:"PSD contours extend into >50 sq miles of unlicensed area — can't currently file PSD"},
+      {m:'February',ws:'CALL_SIGN',c:"PSD contours extend into >50 sq miles of unlicensed area — can't currently file PSD"},
+      {m:'February',ws:'CALL_SIGN',c:"PSD contours extend into >50 sq miles of unlicensed area — can't currently file PSD"},
+      {m:'March',ws:'CALL_SIGN',c:"DO NOT SUBMIT THIS PSD — contours extend into >50 sq miles of unlicensed area"},
+    ]},
+  { id:'16933237', site:'(see tracker)', eng:'Ashutosh Pandey', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'Mar, Apr', issue:'Missing FAA/FCC info (Mar); structure form ≠ FAA elevation (Apr)',
+    rows:[
+      {m:'March',ws:'CIR',c:'Missing existing FAA/FCC info — please enter structure owners ASR'},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA — ground elevation and structure height do not match FAA'},
+      {m:'March',ws:'CIR',c:'Missing existing FAA/FCC info — please enter structure owners ASR'},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA — ground elevation and structure height do not match FAA'},
+    ]},
+  { id:'17505920', site:'(see tracker)', eng:'Priyatham Tamma', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'February', issue:'Coordinates/GE in FUZE do not match 1A Survey',
+    rows:[
+      {m:'February',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey'},
+      {m:'February',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'February',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey'},
+      {m:'February',ws:'CIR',c:"'Update Station Records' Rejected"},
+    ]},
+  { id:'17511877', site:'(see tracker)', eng:'Asad Kamran', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'January', issue:'Please update the ASR # for this site (1021925)',
+    rows:[
+      {m:'January',ws:'CIR',c:'Please update the ASR # for this site 1021925'},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:'Please update the ASR # for this site 1021925'},
+    ]},
+  { id:'17356879', site:'5G L-Sub6 - Carrier Add', eng:'(unassigned)', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'February', issue:'Tower height in FUZE ≠ drawings or FAA (338 ft discrepancy)',
+    rows:[
+      {m:'February',ws:'CIR',c:'Tower height in FUZE does not match drawings or FAA — CDs show 338 ft, so does FAA'},
+      {m:'February',ws:'CIR',c:"'Update Station Records' Approved"},
+      {m:'February',ws:'CIR',c:'Tower height in FUZE does not match drawings or FAA — CDs show 338 ft, so does FAA'},
+      {m:'February',ws:'CIR',c:"'Update Station Records' Approved"},
+    ]},
+  { id:'16619464', site:'(see tracker)', eng:'Victor Durosomo', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'January', issue:'Coordinates in FUZE do not match FAA',
+    rows:[
+      {m:'January',ws:'CIR',c:'Coordinates in FUZE do not match FAA, please update'},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:'Coordinates in FUZE do not match FAA, please update'},
+    ]},
+  { id:'17505910', site:'(see tracker)', eng:'Asad Kamran', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'January', issue:'Ground elevation ≠ 1A survey; soft rejection',
+    rows:[
+      {m:'January',ws:'CIR',c:'Ground elevation does not match 1A survey'},
+      {m:'January',ws:'CIR',c:'Market request — soft rejection'},
+      {m:'January',ws:'CIR',c:'Ground elevation does not match 1A survey'},
+      {m:'January',ws:'CIR',c:'Market request — soft rejection'},
+    ]},
+  { id:'17077741', site:'(see tracker)', eng:'Ashutosh Pandey', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'March', issue:'Missing FAA/FCC info — ASR # not entered',
+    rows:[
+      {m:'March',ws:'CIR',c:'Missing existing FAA/FCC info (ASR #)'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Approved"},
+      {m:'March',ws:'CIR',c:'Missing existing FAA/FCC info (ASR #)'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Approved"},
+    ]},
+  { id:'17021832', site:'(see tracker)', eng:'Asad Kamran', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'January', issue:'CD states VZW to trim/remove lightning rod to meet FAA requirements',
+    rows:[
+      {m:'January',ws:'CIR',c:'CD states VERIZON TO TRIM/REMOVE LIGHTNING ROD TO MEET FAA REQUIREMENTS — update proposed height'},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'January',ws:'CIR',c:'CD states VERIZON TO TRIM/REMOVE LIGHTNING ROD TO MEET FAA REQUIREMENTS — update proposed height'},
+    ]},
+  { id:'17590541', site:'(see tracker)', eng:'Ashutosh Pandey', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'March', issue:'Incorrect FAA # in FUZE; missing ASR # / marking / lighting',
+    rows:[
+      {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'March',ws:'CIR',c:'Missing FAA/FCC info — incorrect FAA # in FUZE, please correct'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'March',ws:'CIR',c:'Missing FAA/FCC info — incorrect FAA # in FUZE, please correct'},
+    ]},
+  { id:'16609014', site:'(see tracker)', eng:'Ashutosh Pandey', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'March', issue:'FAA height 349 ≠ FUZE/ASR; 3rd party update needed',
+    rows:[
+      {m:'March',ws:'CIR',c:'FAA has height of 349 — please update to match; ASR has different height, have 3rd party update'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'March',ws:'CIR',c:'FAA has height of 349 — ASR has different height, have 3rd party update'},
+      {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
+    ]},
+];
+
+/* ── Build repeat table ── */
+const tbody = document.getElementById('repeat-tbody');
+const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
+
+repeatData.forEach((proj, idx) => {
+  const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
+  const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
+  const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
+
+  // Summary row
+  const tr = document.createElement('tr');
+  tr.className = 'proj-header';
+  tr.innerHTML = `
+    <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
+    <td style="font-size:12px;color:#555;">${proj.site}</td>
+    <td class="engineer">${proj.eng}</td>
+    <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
+    <td class="repeat-count-cell ${countClass}">${proj.count}</td>
+    <td>${proj.months.split(',').map(m => `<span class="month-pill ${monthClass[m.trim()]||''}">${m.trim()}</span>`).join(' ')}</td>
+    <td style="font-size:12px;">${proj.issue}</td>
+  `;
+  tr.addEventListener('click', () => {
+    tr.classList.toggle('expanded');
+    detailTr.classList.toggle('open');
+  });
+  tbody.appendChild(tr);
+
+  // Detail row
+  const detailTr = document.createElement('tr');
+  detailTr.className = 'proj-detail-row';
+  const innerHtml = proj.rows.map(r =>
+    `<div class="detail-row">
+      <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
+      <span class="detail-ws">${r.ws}</span>
+      <span class="detail-comment">${r.c}</span>
+    </div>`
+  ).join('');
+  detailTr.innerHTML = `<td colspan="7"><div class="detail-inner">${innerHtml}</div></td>`;
+  tbody.appendChild(detailTr);
+});
+</script>
+
+</body>
+</html>
