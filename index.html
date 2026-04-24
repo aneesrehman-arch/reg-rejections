@@ -227,7 +227,9 @@
       font-family: 'Courier New', monospace; font-size: 10px;
       color: #999; width: 68px; flex-shrink: 0; padding-top: 1px;
     }
+    .exp-date { font-size: 10px; color: #999; width: 68px; flex-shrink: 0; padding-top: 1px; }
     .exp-comment { color: #444; flex: 1; }
+    .detail-date { width: 68px; flex-shrink: 0; font-size: 11px; color: #888; }
   </style>
 </head>
 <body>
@@ -1067,6 +1069,7 @@ repeatData.forEach((proj, idx) => {
   const innerHtml = proj.rows.map(r =>
     `<div class="detail-row">
       <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
+      <span class="detail-date">${r.dt||''}</span>
       <span class="detail-ws">${r.ws}</span>
       <span class="detail-comment">${r.c}</span>
     </div>`
@@ -1078,7 +1081,7 @@ repeatData.forEach((proj, idx) => {
 /* ── Engineer expand data ── */
 const CX_DATA = {
   "Allison Schmidt": [
-    {id:"17505920",m:"February",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey"},
+    {id:"17505920",m:"February",dt:"2/24/2026",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey"},
     {id:"16609014",m:"March",ws:"CIR",c:"FAA has height of 349 — please update to match; ASR has different height, have 3rd party update"},
     {id:"17029116",m:"March",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey — ground elevation should be 281ft"}
   ],
@@ -1196,6 +1199,114 @@ const ISA_DATA = {
   ]
 };
 
+/* ── Date lookup: projectId|commentPrefix40 → date ── */
+const DATE_LOOKUP = {};
+(function(){
+  const raw = [
+    // CX rejections
+    ["16682132","Please amend the LPN date","1/8/2026"],
+    ["17048235","LPN should reference the FCC File","2/16/2026"],
+    ["17048235","ASR app also does not include","2/16/2026"],
+    ["17048235","The LPN document needs to be upload","2/11/2026"],
+    ["17505910","Ground elevation does not match 1A","1/6/2026"],
+    ["17505910","Market request,  - soft rejection","1/6/2026"],
+    ["17021832","Other - CD states VERIZON TO TRIM","1/28/2026"],
+    ["17331849","- soft rejection. Per the FAA they","3/17/2026"],
+    ["16995124","Missing existing FAA/FCC info (ASR","4/6/2026"],
+    ["17505920","Coordinates/GE in FUZE do not match","2/24/2026"],
+    ["16609014","Other -  FAA has height of 349","3/16/2026"],
+    ["17029116","Coordinates/GE in FUZE do not match","3/19/2026"],
+    ["17043458","Other - Tower height in FUZE doesn","1/6/2026"],
+    ["17043458","Other - Tower height in FUZE doesn't match ASR","1/26/2026"],
+    ["17196480","Tillman has agreed to amend","1/13/2026"],
+    ["17196480","Opened AYS ticket","1/13/2026"],
+    ["17196480","Other - Tower height on ASR has hei","1/13/2026"],
+    ["17196480","Frequency Filing Required is change","1/13/2026"],
+    ["17511877","Other - Please update the ASR # for","1/27/2026"],
+    ["17590541","Missing existing FAA/FCC info (ASN","3/9/2026"],
+    ["17001961","Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting) - please update","3/12/2026"],
+    ["17001961","Market request,  - soft rejection -","4/6/2026"],
+    ["17385292","Structure form does not match FAA filing info - Please have the site elevation","3/20/2026"],
+    ["17587117","Ground elevation/structure heights m","1/14/2026"],
+    ["17519644","Structure type wrong or missing","3/10/2026"],
+    ["17511869","Other - Per the ADD letter from the","2/9/2026"],
+    ["17511869","Other - Please update coordinates on","4/8/2026"],
+    ["17196395","Missing Document (AM certificate) ne","3/4/2026"],
+    ["17077741","Missing existing FAA/FCC info (ASR #)","3/23/2026"],
+    ["17028776","Other - Update height to match actua","1/29/2026"],
+    ["17356879","Tower height in FUZE does not match","2/23/2026"],
+    ["16933237","Structure form does not match FAA filing info - ground elevation","4/1/2026"],
+    ["16933237","Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting) - please enter st","3/30/2026"],
+    ["17563039","Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting) - Please enter th","3/30/2026"],
+    ["17424428","Structure form does not match FAA filing info - Please update FUZE coords","3/16/2026"],
+    ["2244144","Structure form does not match FAA filing info - Please have the proposed","4/21/2026"],
+    ["17356886","Structure form does not match FAA filing info - structure height","4/13/2026"],
+    ["17356886","Structure Owner Information Missing/Wrong -please correct","4/13/2026"],
+    ["16997375","Coordinates/GE in FUZE do not match 1A Survey,  Airspace Does","4/9/2026"],
+    ["17314162","Coordinates/GE in FUZE do not match 1A Survey,  Updated document","4/8/2026"],
+    ["17344874","Missing Document (AM certificate) current","1/20/2026"],
+    ["17082600","Coordinates/GE in FUZE do not match 1A Survey - the coordinates","2/23/2026"],
+    ["17501863","GE in FUZE do not match CD","3/11/2026"],
+    ["17029141","Other - The coordinates in FUZE are","2/13/2026"],
+    ["16829509","Structure type wrong or missing","2/9/2026"],
+    ["16829509","Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting)","2/10/2026"],
+    ["16997375","Coordinates/GE in FUZE do not match 1A Survey,  Airspace Does not Match","4/9/2026"],
+    ["17501882","Structure Owner Information Missing/Wrong - please correct","4/13/2026"],
+    ["17501882","Structure Owner Information Missing/Wrong, per ASR","4/9/2026"],
+    ["16912526","Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting) - please enter a","4/2/2026"],
+    ["16756073","Market request,  - soft rejection. GE on USR","4/20/2026"],
+    ["16619464","Coordinates in FUZE do not match FA","1/30/2026"],
+    ["17385248","Other - Per FAA The point has a grou","1/29/2026"],
+    ["17571933","Updated document required -  the coo","4/22/2026"],
+    // ISA rejections
+    ["17501976","Other - your sector into the Gulf ex","1/2/2026"],
+    ["16953094","850 Field Strength/Extension Agreement Insufficient Lake Charles","1/6/2026"],
+    ["16995228","Other - please also upload 40 dBu","1/23/2026"],
+    ["16995228","Other - lease also upload 40 dBu","1/30/2026"],
+    ["17029018","Other - your PSD contours extend into greater than 50 sq miles of unlic...we can't currently file PSD with FCC - you can resubmit non PSD","1/7/2026"],
+    ["17329896","Other - your zipped shp file is EMPT","1/23/2026"],
+    ["17028800","Other - this site extends into great","1/23/2026"],
+    ["17029018","Other - your PSD contours extend into greater than 50 sq miles of unlic...we can't currently file PSD with FCC - you can resubmit non PSD","2/5/2026"],
+    ["17029018","Other - DO NOT SUBMIT THIS PSD","3/2/2026"],
+    ["16825361","Other - the -110 coverage doesn't ma","1/5/2026"],
+    ["16825361","850 Field Strength/Extension Agreement Insufficient you","1/15/2026"],
+    ["17029047","Other - the 32 dBu contour CAN NOT e","1/20/2026"],
+    ["16953134","Other - please also upload 40 Dbu co","1/26/2026"],
+    ["16828349","Other - please upload a scatter plot","1/28/2026"],
+    ["17029171","Other - extends into greater than 50","1/12/2026"],
+    ["17319464","850 Field Strength/Extension Agreement Insufficient 8We","1/15/2026"],
+    ["17319464","Auto Completing Non Regulatory calls","1/15/2026"],
+    ["17029171","Other -  extends into greater than 5","2/5/2026"],
+    ["16953077","Other - your .txt file is NON PSD bu","4/17/2026"],
+    ["16825689","850 Field Strength/Extension Agreement Insufficient Lake Charles and LA 5 are","1/5/2026"],
+    ["16830046","850 Field Strength/Extension Agreement Insufficient this site requires","1/2/2026"],
+    ["17029156","Other - this site extends into great","1/8/2026"],
+    ["17501946","Other - this site extends into great","1/8/2026"],
+    ["17385299","850 Field Strength/Extension Agreement Insufficient this site needs","1/26/2026"],
+    ["15224857","Other - shp files are not for a site","2/2/2026"],
+    ["17277297","Other - your non psd powers WAY exce","2/4/2026"],
+    ["17029156","Other - nothing in the Sorrel non ps","2/16/2026"],
+    ["17501946","Other - nothing in the NON PSD zippe","2/16/2026"]
+  ];
+  raw.forEach(([id, prefix, dt]) => {
+    DATE_LOOKUP[id + '|' + prefix.substring(0, 40)] = dt;
+  });
+})();
+
+function getDate(id, comment) {
+  // Try progressively shorter prefixes to find a match
+  for (let len = 40; len >= 15; len -= 5) {
+    const key = id + '|' + comment.substring(0, len);
+    if (DATE_LOOKUP[key]) return DATE_LOOKUP[key];
+  }
+  return '';
+}
+
+// Inject dates into repeatData rows
+repeatData.forEach(p => {
+  p.rows.forEach(r => { r.dt = getDate(p.id, r.c); });
+});
+
 /* ── Build engineer expand buttons ── */
 const wsStyle = {CIR:'tag-cir', ASR:'tag-asr', CS:'tag-cs'};
 
@@ -1206,14 +1317,16 @@ function buildExpandContent(rows) {
     if (seen.has(key)) return false;
     seen.add(key); return true;
   });
-  return unique.map(r =>
-    `<div class="expand-row">
+  return unique.map(r => {
+    const dt = r.dt || getDate(r.id, r.c);
+    return `<div class="expand-row">
       <span class="exp-id">${r.id}</span>
+      <span class="exp-date">${dt}</span>
       <span class="month-pill ${monthClass[r.m]||''}">${r.m.substring(0,3)}</span>
       <span class="workstep-tag ${wsStyle[r.ws]||''}" style="margin-left:0">${r.ws}</span>
       <span class="exp-comment">${r.c}</span>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
 }
 
 function addExpandButton(cell, rows) {
