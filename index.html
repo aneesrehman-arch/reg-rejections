@@ -169,6 +169,17 @@
     .month-mar { background: #d1fae5; color: #065f46; }
     .month-apr { background: #fce7f3; color: #9d174d; }
 
+    /* Engineer group header in repeat table */
+    .eng-group-row td {
+      background: #f0f4ff;
+      font-weight: 700;
+      font-size: 13px;
+      color: #1d4ed8;
+      padding: 8px 16px;
+      border-top: 2px solid #c7d2fe;
+      border-bottom: 1px solid #c7d2fe;
+    }
+
     /* collapse/expand for repeat rows */
     .proj-header { cursor: pointer; }
     .proj-header:hover td { background: #f0f4ff !important; }
@@ -840,7 +851,6 @@
         <tr>
           <th>Project ID</th>
           <th>Site Name</th>
-          <th>Engineer</th>
           <th>Workstep</th>
           <th class="num">Rejections</th>
           <th>Months Affected</th>
@@ -1365,46 +1375,68 @@ repeatData.forEach(p => {
 const tbody = document.getElementById('repeat-tbody');
 const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
 
-repeatData.forEach((proj, idx) => {
-  const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
-  const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
-  const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
+// Filter out unassigned engineers
+const filteredRepeat = repeatData.filter(p => !p.eng.toLowerCase().includes('unassign'));
 
-  // Summary row
-  const tr = document.createElement('tr');
-  tr.className = 'proj-header';
-  tr.innerHTML = `
-    <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
-    <td style="font-size:12px;color:#555;">${proj.site}</td>
-    <td class="engineer">${proj.eng}</td>
-    <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
-    <td class="repeat-count-cell ${countClass}">${proj.count}</td>
-    <td>${proj.months.split(',').map(m => `<span class="month-pill ${monthClass[m.trim()]||''}">${m.trim()}</span>`).join(' ')}</td>
-    <td style="font-size:12px;">${proj.issue}</td>
-  `;
-  tr.addEventListener('click', () => {
-    tr.classList.toggle('expanded');
-    detailTr.classList.toggle('open');
-  });
-  tbody.appendChild(tr);
+// Group by engineer, sort groups by total rejections desc
+const engGroups = {};
+filteredRepeat.forEach(p => {
+  if (!engGroups[p.eng]) engGroups[p.eng] = [];
+  engGroups[p.eng].push(p);
+});
+const sortedGroups = Object.entries(engGroups).sort((a, b) => {
+  const sumA = a[1].reduce((s, p) => s + p.count, 0);
+  const sumB = b[1].reduce((s, p) => s + p.count, 0);
+  return sumB - sumA;
+});
 
-  // Detail row
-  const detailTr = document.createElement('tr');
-  detailTr.className = 'proj-detail-row';
-  const sortedRows = [...proj.rows].sort((a, b) => {
-    const toMs = d => d ? new Date(d).getTime() : 0;
-    return toMs(a.dt) - toMs(b.dt);
+sortedGroups.forEach(([eng, projects]) => {
+  // Engineer group header row
+  const groupTr = document.createElement('tr');
+  groupTr.className = 'eng-group-row';
+  groupTr.innerHTML = `<td colspan="6">${eng}</td>`;
+  tbody.appendChild(groupTr);
+
+  projects.forEach(proj => {
+    const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
+    const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
+    const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
+
+    // Summary row (no engineer column)
+    const tr = document.createElement('tr');
+    tr.className = 'proj-header';
+    tr.innerHTML = `
+      <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
+      <td style="font-size:12px;color:#555;">${proj.site}</td>
+      <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
+      <td class="repeat-count-cell ${countClass}">${proj.count}</td>
+      <td>${proj.months.split(',').map(m => `<span class="month-pill ${monthClass[m.trim()]||''}">${m.trim()}</span>`).join(' ')}</td>
+      <td style="font-size:12px;">${proj.issue}</td>
+    `;
+    tr.addEventListener('click', () => {
+      tr.classList.toggle('expanded');
+      detailTr.classList.toggle('open');
+    });
+    tbody.appendChild(tr);
+
+    // Detail row
+    const detailTr = document.createElement('tr');
+    detailTr.className = 'proj-detail-row';
+    const sortedRows = [...proj.rows].sort((a, b) => {
+      const toMs = d => d ? new Date(d).getTime() : 0;
+      return toMs(a.dt) - toMs(b.dt);
+    });
+    const innerHtml = sortedRows.map(r =>
+      `<div class="detail-row">
+        <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
+        <span class="detail-date">${r.dt||''}</span>
+        <span class="detail-ws">${r.ws}</span>
+        <span class="detail-comment">${r.c}</span>
+      </div>`
+    ).join('');
+    detailTr.innerHTML = `<td colspan="6"><div class="detail-inner">${innerHtml}</div></td>`;
+    tbody.appendChild(detailTr);
   });
-  const innerHtml = sortedRows.map(r =>
-    `<div class="detail-row">
-      <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
-      <span class="detail-date">${r.dt||''}</span>
-      <span class="detail-ws">${r.ws}</span>
-      <span class="detail-comment">${r.c}</span>
-    </div>`
-  ).join('');
-  detailTr.innerHTML = `<td colspan="7"><div class="detail-inner">${innerHtml}</div></td>`;
-  tbody.appendChild(detailTr);
 });
 
 /* ── Build engineer expand buttons ── */
