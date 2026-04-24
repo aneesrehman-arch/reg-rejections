@@ -265,6 +265,7 @@
   <button class="tab active" onclick="showTab('overview')">Overview</button>
   <button class="tab" onclick="showTab('buckets')">Rejection Buckets &amp; Recommendations</button>
   <button class="tab" onclick="showTab('repeats')">Repeat Rejections</button>
+  <button class="tab" onclick="showTab('invalid')">Invalid Rejections</button>
 </div>
 
 <!-- ═══════════════════════════════════════ TAB 1: OVERVIEW ═══════════════════════════════════════ -->
@@ -872,6 +873,38 @@
   </div>
 </div><!-- /tab-repeats -->
 
+<!-- ═══════════════════════════════════════ TAB 4: INVALID REJECTIONS ═══════════════════════════════════════ -->
+<div id="tab-invalid" class="tab-panel">
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Update Station Records Cascade</h2>
+      <span class="badge" style="background:#f3f4f6;color:#374151;" id="badge-usr">—</span>
+      <span style="font-size:12px;color:#777;margin-left:8px;">System-generated cascade rejections triggered by a primary rejection — not actionable on their own</span>
+    </div>
+    <div id="invalid-usr-container"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Soft Rejections</h2>
+      <span class="badge" style="background:#fef9c3;color:#854d0e;" id="badge-soft">—</span>
+      <span style="font-size:12px;color:#777;margin-left:8px;">Market-requested advisory rejections — not hard stops, but still require action</span>
+    </div>
+    <div id="invalid-soft-container"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Exact Duplicate Entries</h2>
+      <span class="badge" style="background:#fee2e2;color:#991b1b;" id="badge-dupes">—</span>
+      <span style="font-size:12px;color:#777;margin-left:8px;">Same rejection comment on the same date — each unique entry counted once in other tabs</span>
+    </div>
+    <div id="invalid-dupes-container"></div>
+  </div>
+
+</div><!-- /tab-invalid -->
+
 <script>
 /* ── Tab switching ── */
 function showTab(name) {
@@ -1049,6 +1082,20 @@ const repeatData = [
       {m:'March',ws:'CIR',c:"'Update Station Records' Rejected"},
     ]},
 ];
+
+/* ── Capture USR cascade rows BEFORE filtering them out ── */
+const usrInvalidRows = [];
+(function() {
+  const seen = new Set();
+  repeatData.forEach(p => {
+    p.rows.forEach(r => {
+      if (r.c.includes('Update Station Records')) {
+        const k = `${p.eng}|${p.id}|${r.m}|${r.ws}|${r.c}`;
+        if (!seen.has(k)) { seen.add(k); usrInvalidRows.push({eng:p.eng, id:p.id, ws:r.ws, m:r.m, c:r.c}); }
+      }
+    });
+  });
+})();
 
 /* ── Remove USR cascade rows from repeat data ── */
 repeatData.forEach(p => {
@@ -1545,6 +1592,117 @@ function addExpandButton(cell, rows) {
     const name = cell.textContent.trim();
     if (ISA_DATA[name]) addExpandButton(cell, ISA_DATA[name]);
   });
+})();
+
+/* ── Build Invalid Rejections tab ── */
+(function buildInvalidTab() {
+  const mClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
+
+  function makeTable(headers, rows) {
+    const tbl = document.createElement('table');
+    const thead = document.createElement('thead');
+    const htr = document.createElement('tr');
+    headers.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      if (h === 'Count') th.className = 'num';
+      htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+    tbl.appendChild(thead);
+    const tbody = document.createElement('tbody');
+    rows.forEach(cells => {
+      const tr = document.createElement('tr');
+      cells.forEach((cell, i) => {
+        const td = document.createElement('td');
+        td.innerHTML = String(cell);
+        if (headers[i] === 'Count') td.className = 'num';
+        if (headers[i] === 'Comment') { td.style.fontSize = '12px'; td.style.color = '#555'; }
+        if (headers[i] === 'Project ID') { td.style.fontFamily = "'Courier New',monospace"; td.style.fontSize = '11px'; }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    return tbl;
+  }
+
+  function mpill(m) { return `<span class="month-pill ${mClass[m]||''}">${m}</span>`; }
+
+  // ── 1. USR ──
+  const usrContainer = document.getElementById('invalid-usr-container');
+  if (usrInvalidRows.length === 0) {
+    usrContainer.innerHTML = '<p style="padding:16px;color:#888;font-size:13px;">No USR cascade rows found.</p>';
+  } else {
+    usrContainer.appendChild(makeTable(
+      ['Engineer','Project ID','Month','Workstep','Comment'],
+      usrInvalidRows.map(r => [r.eng, r.id, mpill(r.m), r.ws, r.c])
+    ));
+    document.getElementById('badge-usr').textContent = usrInvalidRows.length + ' rows';
+  }
+
+  // ── 2. Soft Rejections ──
+  const softRows = [];
+  function collectSoft(data) {
+    Object.entries(data).forEach(([eng, rows]) => {
+      const seen = new Set();
+      rows.forEach(r => {
+        const lc = r.c.toLowerCase();
+        if (lc.includes('soft rejection') || lc.includes('soft reject')) {
+          const k = `${eng}|${r.id}|${r.dt}|${r.c}`;
+          if (!seen.has(k)) { seen.add(k); softRows.push({eng, id:r.id, dt:r.dt||'', m:r.m, ws:r.ws, c:r.c}); }
+        }
+      });
+    });
+  }
+  collectSoft(CX_DATA);
+  collectSoft(ISA_DATA);
+
+  const softContainer = document.getElementById('invalid-soft-container');
+  if (softRows.length === 0) {
+    softContainer.innerHTML = '<p style="padding:16px;color:#888;font-size:13px;">No soft rejections found.</p>';
+  } else {
+    softContainer.appendChild(makeTable(
+      ['Engineer','Project ID','Date','Month','Workstep','Comment'],
+      softRows.map(r => [r.eng, r.id, r.dt, mpill(r.m), r.ws, r.c])
+    ));
+    document.getElementById('badge-soft').textContent = softRows.length + ' rows';
+  }
+
+  // ── 3. Exact Duplicates ──
+  const dupeRows = [];
+  function collectDupes(data) {
+    Object.entries(data).forEach(([eng, rows]) => {
+      const counts = {};
+      rows.forEach(r => {
+        const k = `${r.id}|${r.dt}|${r.c}`;
+        counts[k] = (counts[k] || 0) + 1;
+      });
+      const shown = new Set();
+      rows.forEach(r => {
+        const k = `${r.id}|${r.dt}|${r.c}`;
+        const dk = `${eng}|${k}`;
+        if (counts[k] > 1 && !shown.has(dk)) {
+          shown.add(dk);
+          dupeRows.push({eng, id:r.id, dt:r.dt||'', m:r.m, ws:r.ws, c:r.c, n:counts[k]});
+        }
+      });
+    });
+  }
+  collectDupes(CX_DATA);
+  collectDupes(ISA_DATA);
+
+  const dupesContainer = document.getElementById('invalid-dupes-container');
+  if (dupeRows.length === 0) {
+    dupesContainer.innerHTML = '<p style="padding:16px;color:#888;font-size:13px;">No exact duplicates found.</p>';
+  } else {
+    dupesContainer.appendChild(makeTable(
+      ['Engineer','Project ID','Date','Month','Workstep','Count','Comment'],
+      dupeRows.map(r => [r.eng, r.id, r.dt, mpill(r.m), r.ws,
+        `<span style="font-weight:700;color:#dc2626;">&times;${r.n}</span>`, r.c])
+    ));
+    document.getElementById('badge-dupes').textContent = dupeRows.length + ' unique entries';
+  }
 })();
 </script>
 
