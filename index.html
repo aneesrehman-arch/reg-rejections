@@ -1028,6 +1028,12 @@ const repeatData = [
     ]},
 ];
 
+/* ── Remove USR cascade rows from repeat data ── */
+repeatData.forEach(p => {
+  p.rows = p.rows.filter(r => !r.c.includes('Update Station Records'));
+  p.count = p.rows.length;
+});
+
 /* ── Build repeat table ── */
 const tbody = document.getElementById('repeat-tbody');
 const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
@@ -1067,12 +1073,6 @@ repeatData.forEach((proj, idx) => {
   ).join('');
   detailTr.innerHTML = `<td colspan="7"><div class="detail-inner">${innerHtml}</div></td>`;
   tbody.appendChild(detailTr);
-});
-
-/* ── Remove USR cascade rows from repeat data ── */
-repeatData.forEach(p => {
-  p.rows = p.rows.filter(r => !r.c.includes('Update Station Records'));
-  p.count = p.rows.length;
 });
 
 /* ── Engineer expand data ── */
