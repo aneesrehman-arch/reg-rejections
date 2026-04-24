@@ -201,6 +201,33 @@
     .bc-psd      { border-left: 4px solid #be185d; }
     .bc-fstrength{ border-left: 4px solid #7c3aed; }
     .bc-files    { border-left: 4px solid #047857; }
+
+    /* ── Engineer expand ── */
+    .expand-btn {
+      display: inline-block; margin-top: 5px;
+      font-size: 10px; padding: 2px 8px;
+      border: 1px solid #e2e8f0; border-radius: 4px;
+      background: #f8fafc; color: #1d4ed8;
+      cursor: pointer; font-weight: 600; font-family: inherit;
+      transition: background .12s;
+    }
+    .expand-btn:hover { background: #eff6ff; border-color: #bfdbfe; }
+    .eng-expand {
+      margin-top: 8px; font-size: 11px;
+      border-top: 1px solid #e8eaf0; padding-top: 6px;
+      max-width: 500px;
+    }
+    .expand-row {
+      display: flex; align-items: flex-start;
+      gap: 8px; padding: 4px 0;
+      border-bottom: 1px solid #f8f9fb; line-height: 1.4;
+    }
+    .expand-row:last-child { border-bottom: none; }
+    .exp-id {
+      font-family: 'Courier New', monospace; font-size: 10px;
+      color: #999; width: 68px; flex-shrink: 0; padding-top: 1px;
+    }
+    .exp-comment { color: #444; flex: 1; }
   </style>
 </head>
 <body>
@@ -1041,6 +1068,184 @@ repeatData.forEach((proj, idx) => {
   detailTr.innerHTML = `<td colspan="7"><div class="detail-inner">${innerHtml}</div></td>`;
   tbody.appendChild(detailTr);
 });
+
+/* ── Remove USR cascade rows from repeat data ── */
+repeatData.forEach(p => {
+  p.rows = p.rows.filter(r => !r.c.includes('Update Station Records'));
+  p.count = p.rows.length;
+});
+
+/* ── Engineer expand data ── */
+const CX_DATA = {
+  "Allison Schmidt": [
+    {id:"17505920",m:"February",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey"},
+    {id:"16609014",m:"March",ws:"CIR",c:"FAA has height of 349 — please update to match; ASR has different height, have 3rd party update"},
+    {id:"17029116",m:"March",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey — ground elevation should be 281ft"}
+  ],
+  "Asad Kamran": [
+    {id:"17043458",m:"January",ws:"CIR",c:"Tower height in FUZE doesn't match the FAA"},
+    {id:"17043458",m:"January",ws:"CIR",c:"Tower height in FUZE doesn't match ASR — have ATC update the ASR height to match filing"},
+    {id:"17196480",m:"January",ws:"CIR",c:"Tower height on ASR is 210, FAA shows 320 — have third party update"},
+    {id:"17196480",m:"January",ws:"CIR",c:"Tillman agreed to amend AGL to 210 FT post construction"},
+    {id:"17196480",m:"January",ws:"CIR",c:"Opened AYS ticket — INC016071763"},
+    {id:"17196480",m:"January",ws:"CIR",c:"Frequency Filing Required changed from No to Yes"},
+    {id:"17511877",m:"January",ws:"CIR",c:"Please update the ASR # for this site — 1021925"},
+    {id:"17590541",m:"March",ws:"CIR",c:"Missing FAA/FCC info — incorrect FAA # in FUZE, please correct"},
+    {id:"17001961",m:"March",ws:"CIR",c:"Missing FAA/FCC info — please update the ASR number"},
+    {id:"17001961",m:"April",ws:"CIR",c:"Soft rejection — ASR number provided is the application number; hold until VB provides registration number"}
+  ],
+  "Ashutosh Pandey": [
+    {id:"17587117",m:"January",ws:"CIR",c:"Ground elevation/structure heights missing — please populate Proposed Structure Height (ft/m); currently zero"},
+    {id:"17511869",m:"February",ws:"CIR",c:"Per ADD letter from FAA, coordinates are not plotting on the tower"},
+    {id:"17511869",m:"April",ws:"CIR",c:"Please update coordinates on CD to match FUZE"},
+    {id:"17077741",m:"March",ws:"CIR",c:"Missing FAA/FCC info — ASR # not entered"},
+    {id:"17196395",m:"March",ws:"CIR",c:"Missing Document — AM certificate must be within 6 months; also ASR height doesn't match FAA filing"},
+    {id:"17385292",m:"March",ws:"CIR",c:"Structure form does not match FAA filing — have site elevation & coordinates match exactly as listed under ASN 2025-ASW-11070-OE"},
+    {id:"17519644",m:"March",ws:"CIR",c:"Structure type wrong or missing"}
+  ],
+  "Priyatham Tamma": [
+    {id:"17028776",m:"January",ws:"CIR",c:"Update height to match actual height on CD of 425ft"},
+    {id:"17356879",m:"February",ws:"CIR",c:"Tower height in FUZE does not match drawings or FAA — CDs show 338ft, so does FAA 2025-ASO-12180-OE"}
+  ],
+  "Raja Magunta": [
+    {id:"16933237",m:"March",ws:"CIR",c:"Missing FAA/FCC info — please enter structure owner's ASR"},
+    {id:"17563039",m:"March",ws:"CIR",c:"Missing FAA/FCC info — please enter owner's FAA and ASR (required since structure is over 200ft)"},
+    {id:"17424428",m:"March",ws:"CIR",c:"Structure form does not match FAA — update FUZE coords to match FAA; adjust proposed & existing heights to 265 FT AGL"},
+    {id:"16933237",m:"April",ws:"CIR",c:"Structure form does not match FAA — ground elevation and structure height do not match FAA/ASR"},
+    {id:"17356886",m:"April",ws:"CIR",c:"Structure form does not match FAA — structure height does not match FAA/ASR"},
+    {id:"17356886",m:"April",ws:"CIR",c:"Structure Owner Wrong — ASR shows ATC as structure owner"},
+    {id:"16997375",m:"April",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey; Airspace does not match FUZE Project Details"},
+    {id:"17314162",m:"April",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey — rerun Airspace at ground elevation 92ft"},
+    {id:"2244144",m:"April",ws:"CIR",c:"Structure form does not match FAA — update proposed overall height AGL to match ASR study height of 310 FT AGL"}
+  ],
+  "Roma Patel": [
+    {id:"17344874",m:"January",ws:"CIR",c:"Missing Document — AM certificate current study is over 6 months old"},
+    {id:"17082600",m:"February",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey — FAA and ASR filings do not match; have structure owner update ASR prior to Verizon filing for CBand"}
+  ],
+  "Shennay Hampton - TEK": [
+    {id:"17501863",m:"March",ws:"CIR",c:"GE in FUZE does not match CD"}
+  ],
+  "Tamara Gil": [
+    {id:"17029141",m:"February",ws:"CIR",c:"Coordinates in FUZE are not matching the coordinates on the FAA"},
+    {id:"16829509",m:"February",ws:"CIR",c:"Structure type wrong or missing"},
+    {id:"16829509",m:"February",ws:"CIR",c:"Missing FAA/FCC info — ASN #, ASR #, Marking/Lighting"},
+    {id:"16997375",m:"April",ws:"CIR",c:"Coordinates/GE in FUZE do not match 1A Survey; Airspace does not match FUZE — resubmit Airspace, AM certificate, and Google Earth map showing structure plotted for FAA filing"},
+    {id:"17501882",m:"April",ws:"CIR",c:"Structure Owner Wrong — this is a VZW site per the ASR"},
+    {id:"16912526",m:"April",ws:"CIR",c:"Missing FAA/FCC info — please enter a valid FAA study and structure owner's ASR"},
+    {id:"16756073",m:"April",ws:"CIR",c:"Soft rejection — GE on USR doesn't match 1A survey"}
+  ],
+  "Victor Durosomo": [
+    {id:"16619464",m:"January",ws:"CIR",c:"Coordinates in FUZE do not match FAA, please update"},
+    {id:"17385248",m:"January",ws:"CIR",c:"Per FAA the point has a ground elevation of 35 ft — please update on CD and in FUZE"},
+    {id:"17571933",m:"April",ws:"CIR",c:"Coordinates point to middle of street on 1A — upload Google Earth image showing exact pole placement; update structure form with new coordinates and ground elevation"}
+  ],
+  "Yousuf Moiz": [
+    {id:"16682132",m:"January",ws:"ASR",c:"Please amend the LPN date to reflect the latest LPN date; upload new LPN once affidavit is received"},
+    {id:"17048235",m:"February",ws:"ASR",c:"LPN should reference the FCC File # — please run another one with this information"},
+    {id:"17048235",m:"February",ws:"ASR",c:"ASR app does not include anticipated lighting"},
+    {id:"17048235",m:"February",ws:"ASR",c:"LPN document needs to be uploaded showing what was published in the newspaper"},
+    {id:"17505910",m:"January",ws:"CIR",c:"Ground elevation does not match 1A survey"},
+    {id:"17505910",m:"January",ws:"CIR",c:"Market request — soft rejection"},
+    {id:"17021832",m:"January",ws:"CIR",c:"CD states VERIZON TO TRIM/REMOVE LIGHTNING ROD TO MEET FAA REQUIREMENTS — update Proposed Structure Height with appurtenances to 287ft"},
+    {id:"17331849",m:"March",ws:"CIR",c:"Soft rejection — FAA requesting height be lowered to 234ft; if reduced, favorable determination could be issued"},
+    {id:"16995124",m:"April",ws:"CIR",c:"Missing FAA/FCC info — ASR # not entered"}
+  ]
+};
+
+const ISA_DATA = {
+  "Asad Kamran": [
+    {id:"17501976",m:"January",ws:"CS",c:"Sector into Gulf extends past SAB — for gulf we look at 32 dBu SAB only; need extension agreement or power down that sector"},
+    {id:"16953094",m:"January",ws:"CS",c:"Field Strength/Extension Agreement Insufficient — Lake Charles and LA 5 belong to competitors; need a field strength agreement"},
+    {id:"16995228",m:"January",ws:"CS",c:"Please also upload 40 dBu for review of field strength requirements"}
+  ],
+  "Belem Rios": [
+    {id:"17029018",m:"January",ws:"CS",c:"PSD contours extend into >50 sq miles of unlicensed area — cannot file PSD; resubmit non-PSD"},
+    {id:"17329896",m:"January",ws:"CS",c:"Zipped shp file is EMPTY"},
+    {id:"17028800",m:"January",ws:"CS",c:"Site extends into >50 sq miles of unlicensed area — currently not filing PSD contours; resubmit non-PSD or hold"},
+    {id:"17029018",m:"February",ws:"CS",c:"PSD contours extend into >50 sq miles of unlicensed area — cannot file PSD; resubmit non-PSD"},
+    {id:"17029018",m:"March",ws:"CS",c:"DO NOT SUBMIT THIS PSD — contours extend into >50 sq miles of unlicensed area"}
+  ],
+  "Mazhar Shahzad": [
+    {id:"16825361",m:"January",ws:"CS",c:"-110 coverage doesn't matter into the gulf — only 32 SAB matters; extends too far without a new extension agreement"},
+    {id:"16825361",m:"January",ws:"CS",c:"Field Strength/Extension Agreement Insufficient — need field strength agreement into LA 5"},
+    {id:"17029047",m:"January",ws:"CS",c:"32 dBu contour cannot extend into Gulf of Mexico — sector 2 goes too far"},
+    {id:"16953134",m:"January",ws:"CS",c:"Please also upload 40 dBu contours"},
+    {id:"16828349",m:"January",ws:"CS",c:"Please upload a scatter plot of -110 RSRP with the SAB to determine if field strength agreement is needed"}
+  ],
+  "Roma Patel": [
+    {id:"17029171",m:"January",ws:"CS",c:"Extends into >50 sq miles of unlicensed — currently not filing PSD; resubmit non-PSD for approval"},
+    {id:"17319464",m:"January",ws:"CS",c:"Field Strength/Extension Agreement Insufficient — 32 dBu contour exceeds into gulf past SAB; need field strength agreement"},
+    {id:"17319464",m:"January",ws:"CS",c:"Auto Completing Non Regulatory callsign — CBRS_CALLSIGN"},
+    {id:"17029171",m:"February",ws:"CS",c:"Extends into >50 sq miles of unlicensed — resubmit non-PSD"}
+  ],
+  "Tamara Gil": [
+    {id:"16953077",m:"April",ws:"CS",c:".txt file is NON PSD but PSD shapefiles were uploaded"}
+  ],
+  "Victor Durosomo": [
+    {id:"16825689",m:"January",ws:"CS",c:"Field Strength/Extension Agreement Insufficient — Lake Charles and LA 5 are not VZW markets; extension into them is unacceptable"}
+  ],
+  "Yousuf Moiz": [
+    {id:"16830046",m:"January",ws:"CS",c:"Field Strength/Extension Agreement Insufficient — site requires agreement in Lake Charles and LA 5 (non-VZW markets)"},
+    {id:"17029156",m:"January",ws:"CS",c:"Site extends into >50 sq miles of unlicensed area — cannot file PSD; resubmit non-PSD or wait until resolved"},
+    {id:"17501946",m:"January",ws:"CS",c:"Site extends into >50 sq miles of unlicensed area — cannot file PSD; resubmit non-PSD or wait until resolved"},
+    {id:"17385299",m:"January",ws:"CS",c:"Field Strength/Extension Agreement Insufficient — site needs field strength agreement into Houma"},
+    {id:"15224857",m:"February",ws:"CS",c:"Shapefiles are not for a site in Beaumont"},
+    {id:"17277297",m:"February",ws:"CS",c:"Non-PSD powers WAY exceed maximum 1000W total power in a rural county"},
+    {id:"17029156",m:"February",ws:"CS",c:"Nothing in the Sorrel non-PSD zipped folder — please delete the ones from December"},
+    {id:"17501946",m:"February",ws:"CS",c:"Nothing in the NON PSD zipped file — please delete the ones from December"}
+  ]
+};
+
+/* ── Build engineer expand buttons ── */
+const wsStyle = {CIR:'tag-cir', ASR:'tag-asr', CS:'tag-cs'};
+
+function buildExpandContent(rows) {
+  const seen = new Set();
+  const unique = rows.filter(r => {
+    const key = `${r.id}|${r.ws}|${r.c}`;
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  return unique.map(r =>
+    `<div class="expand-row">
+      <span class="exp-id">${r.id}</span>
+      <span class="month-pill ${monthClass[r.m]||''}">${r.m.substring(0,3)}</span>
+      <span class="workstep-tag ${wsStyle[r.ws]||''}" style="margin-left:0">${r.ws}</span>
+      <span class="exp-comment">${r.c}</span>
+    </div>`
+  ).join('');
+}
+
+function addExpandButton(cell, rows) {
+  const btn = document.createElement('button');
+  btn.className = 'expand-btn';
+  btn.textContent = '▼ details';
+  const panel = document.createElement('div');
+  panel.className = 'eng-expand';
+  panel.style.display = 'none';
+  panel.innerHTML = buildExpandContent(rows);
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'block';
+    btn.textContent = isOpen ? '▼ details' : '▲ hide';
+  });
+  cell.appendChild(document.createElement('br'));
+  cell.appendChild(btn);
+  cell.appendChild(panel);
+}
+
+(function initEngineers() {
+  const tables = document.querySelectorAll('#tab-overview .section table');
+  tables[0].querySelectorAll('td.engineer').forEach(cell => {
+    const name = cell.textContent.trim();
+    if (CX_DATA[name]) addExpandButton(cell, CX_DATA[name]);
+  });
+  tables[1].querySelectorAll('td.engineer').forEach(cell => {
+    const name = cell.textContent.trim();
+    if (ISA_DATA[name]) addExpandButton(cell, ISA_DATA[name]);
+  });
+})();
 </script>
 
 </body>
