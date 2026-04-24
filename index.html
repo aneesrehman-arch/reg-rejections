@@ -179,6 +179,15 @@
       border-top: 2px solid #c7d2fe;
       border-bottom: 1px solid #c7d2fe;
     }
+    .eng-rec-cell {
+      font-weight: 400;
+      font-size: 11.5px;
+      color: #166534;
+      background: #f0fdf4;
+      border-left: 3px solid #16a34a;
+      line-height: 1.5;
+      white-space: normal;
+    }
 
     /* collapse/expand for repeat rows */
     .proj-header { cursor: pointer; }
@@ -1377,6 +1386,21 @@ const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',A
 // Filter out unassigned engineers
 const filteredRepeat = repeatData.filter(p => !p.eng.toLowerCase().includes('unassign'));
 
+const ENG_REC = {
+  "Asad Kamran":      "Verify tower height in FUZE against FAA OE/AAA and ASR before every CIR submission. Confirm the ASR # is the issued registration number, not the application number. A pre-submission height reconciliation checklist would eliminate most of these rejections.",
+  "Tamara Gil":       "Cross-check FUZE coordinates and ground elevation against the 1A Survey before submission. Confirm structure ownership in the ASR (VZW vs. tower company) at project setup so it does not slip through to CIR.",
+  "Raja Magunta":     "Run a side-by-side diff of the structure form vs. the latest FAA filing (height, coords, GE) before submitting. Pull the current ASR owner info at project creation — do not rely on stale FUZE data.",
+  "Ashutosh Pandey":  "Review ADD letters immediately and update FUZE coordinates to match FAA findings before resubmitting. Block CIR submission when AM certificate is older than 5 months. Validate structure type and ASR # are populated and correct.",
+  "Yousuf Moiz":      "Ensure LPN references the FCC File # and anticipated lighting before ASR submission. Reconcile heights between FUZE, FAA, and construction drawings before CIR. Respond to ADD letters before resubmitting rather than submitting unchanged.",
+  "Allison Schmidt":  "Validate FUZE coordinates and ground elevation against the 1A Survey and FAA DNH before submission. Confirm FAA height matches ASR; flag any discrepancy to the 3rd-party tower owner before filing.",
+  "Victor Durosomo":  "Confirm coordinates map to the exact structure location (not street centerline or approximation) — use a Google Earth plot with RE/SAQ assistance if needed. Update structure form and NEPA docs at the same time to avoid downstream delays.",
+  "Priyatham Tamma":  "Reconcile structure height between FUZE, construction drawings, and FAA filing before CIR submission. Treat any height delta > 0 ft as a blocker.",
+  "Roma Patel":       "Check AM certificate expiry before submission — flag as a blocker if older than 5 months. Verify FAA and ASR coordinates match FUZE; coordinate with structure owner to update ASR prior to Verizon filing.",
+  "Belem Rios":       "Run a pre-submission unlicensed area check against the 50 sq mi PSD threshold. If contours exceed it, place the project in PSD Hold and resubmit as non-PSD rather than submitting repeatedly each month.",
+  "Mazhar Shahzad":   "Verify 32 dBu SAB contours remain within coverage boundaries for gulf and border areas before CALL_SIGN submission. Confirm field strength agreements are in place for any extension into non-VZW markets.",
+  "Yousuf Moiz (ISA)":"Check 32 dBu and unlicensed area thresholds before every CALL_SIGN submission. Ensure all zipped shp files are non-empty and correctly labelled before upload. Field strength agreements must be confirmed before submitting sites near Houma or non-VZW markets."
+};
+
 // Group by engineer, sort groups by total rejections desc
 const engGroups = {};
 filteredRepeat.forEach(p => {
@@ -1393,7 +1417,11 @@ sortedGroups.forEach(([eng, projects]) => {
   // Engineer group header row
   const groupTr = document.createElement('tr');
   groupTr.className = 'eng-group-row';
-  groupTr.innerHTML = `<td colspan="5">${eng}</td>`;
+  const rec = ENG_REC[eng] || '';
+  groupTr.innerHTML = `
+    <td colspan="2" style="white-space:nowrap">${eng}</td>
+    <td colspan="3" class="eng-rec-cell">${rec ? '💡 ' + rec : ''}</td>
+  `;
   tbody.appendChild(groupTr);
 
   projects.forEach(proj => {
