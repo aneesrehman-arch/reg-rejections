@@ -1372,9 +1372,33 @@ function getDate(id, comment) {
   return '';
 }
 
-// Inject dates into repeatData rows
+// Build a date pool from v2 data keyed by projectId|month|ws
+const PROJ_DATES = {};
+(function() {
+  function index(data) {
+    Object.values(data).forEach(rows => {
+      rows.forEach(r => {
+        if (!r.dt) return;
+        const key = `${r.id}|${r.m}|${r.ws}`;
+        if (!PROJ_DATES[key]) PROJ_DATES[key] = [];
+        if (!PROJ_DATES[key].includes(r.dt)) PROJ_DATES[key].push(r.dt);
+      });
+    });
+  }
+  index(CX_DATA);
+  index(ISA_DATA);
+})();
+
+// Inject dates into repeatData rows using v2 pool, fallback to DATE_LOOKUP
 repeatData.forEach(p => {
-  p.rows.forEach(r => { r.dt = getDate(p.id, r.c); });
+  const used = {};
+  p.rows.forEach(r => {
+    const key = `${p.id}|${r.m}|${r.ws}`;
+    used[key] = used[key] || 0;
+    const pool = PROJ_DATES[key] || [];
+    r.dt = pool[used[key]] || pool[0] || getDate(p.id, r.c);
+    used[key]++;
+  });
 });
 
 /* ── Build engineer expand buttons ── */
