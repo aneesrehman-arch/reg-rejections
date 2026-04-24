@@ -850,7 +850,6 @@
       <thead>
         <tr>
           <th>Project ID</th>
-          <th>Site Name</th>
           <th>Workstep</th>
           <th class="num">Rejections</th>
           <th>Months Affected</th>
@@ -1394,7 +1393,7 @@ sortedGroups.forEach(([eng, projects]) => {
   // Engineer group header row
   const groupTr = document.createElement('tr');
   groupTr.className = 'eng-group-row';
-  groupTr.innerHTML = `<td colspan="6">${eng}</td>`;
+  groupTr.innerHTML = `<td colspan="5">${eng}</td>`;
   tbody.appendChild(groupTr);
 
   projects.forEach(proj => {
@@ -1436,7 +1435,6 @@ sortedGroups.forEach(([eng, projects]) => {
     tr.className = 'proj-header';
     tr.innerHTML = `
       <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
-      <td style="font-size:12px;color:#555;">${proj.site}</td>
       <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
       <td class="repeat-count-cell ${countClass}">${proj.count}</td>
       <td>${proj.months.split(',').map(m => `<span class="month-pill ${monthClass[m.trim()]||''}">${m.trim()}</span>`).join(' ')}</td>
@@ -1459,7 +1457,7 @@ sortedGroups.forEach(([eng, projects]) => {
         <span class="detail-comment">${r.c}</span>
       </div>`
     ).join('');
-    detailTr.innerHTML = `<td colspan="6"><div class="detail-inner">${innerHtml}</div></td>`;
+    detailTr.innerHTML = `<td colspan="5"><div class="detail-inner">${innerHtml}</div></td>`;
     tbody.appendChild(detailTr);
   });
 });
