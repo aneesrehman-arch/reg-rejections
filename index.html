@@ -1596,113 +1596,69 @@ function addExpandButton(cell, rows) {
 
 /* ── Build Invalid Rejections tab ── */
 (function buildInvalidTab() {
-  const mClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
+  // Source: April Total Rejection by month Tabular_Full Data_data.csv — Regulatory Engineer column
+  const USR_DATA = [
+    {eng: 'Dominique Crawford', count: 30},
+    {eng: 'Lauren Bradsher',    count:  4},
+    {eng: 'Carissa Davis',      count:  3},
+    {eng: 'Keia Broussard',     count:  2},
+    {eng: 'Maureen Ramdath',    count:  2}
+  ];
+  const SOFT_DATA = [
+    {eng: 'Dominique Crawford', count: 4},
+    {eng: 'Susan Davis',        count: 2},
+    {eng: 'Keia Broussard',     count: 1}
+  ];
+  const DUPE_DATA = [
+    {eng: 'Dominique Crawford', count: 43},
+    {eng: 'Carissa Davis',      count: 10},
+    {eng: 'Lauren Bradsher',    count:  9},
+    {eng: 'Susan Davis',        count:  4},
+    {eng: 'Maureen Ramdath',    count:  2}
+  ];
 
-  function makeTable(headers, rows) {
+  function renderSection(containerId, badgeId, data) {
+    const total = data.reduce((s, r) => s + r.count, 0);
+    document.getElementById(badgeId).textContent = total + ' total';
+
     const tbl = document.createElement('table');
     const thead = document.createElement('thead');
     const htr = document.createElement('tr');
-    headers.forEach(h => {
+    [['Regulatory Engineer',''], ['Count','num sort-active']].forEach(([label, cls]) => {
       const th = document.createElement('th');
-      th.textContent = h;
-      if (h === 'Count') th.className = 'num';
+      th.textContent = label;
+      if (cls) th.className = cls;
       htr.appendChild(th);
     });
     thead.appendChild(htr);
     tbl.appendChild(thead);
+
     const tbody = document.createElement('tbody');
-    rows.forEach(cells => {
+    data.forEach(r => {
       const tr = document.createElement('tr');
-      cells.forEach((cell, i) => {
-        const td = document.createElement('td');
-        td.innerHTML = String(cell);
-        if (headers[i] === 'Count') td.className = 'num';
-        if (headers[i] === 'Comment') { td.style.fontSize = '12px'; td.style.color = '#555'; }
-        if (headers[i] === 'Project ID') { td.style.fontFamily = "'Courier New',monospace"; td.style.fontSize = '11px'; }
-        tr.appendChild(td);
-      });
+      const tdE = document.createElement('td');
+      tdE.className = 'engineer';
+      tdE.textContent = r.eng;
+      const tdC = document.createElement('td');
+      const heat = r.count >= 20 ? 'heat-4' : r.count >= 10 ? 'heat-3' : r.count >= 5 ? 'heat-2' : r.count >= 2 ? 'heat-1' : '';
+      tdC.className = 'total' + (heat ? ' ' + heat : '');
+      tdC.textContent = r.count;
+      tr.appendChild(tdE);
+      tr.appendChild(tdC);
       tbody.appendChild(tr);
     });
+    const gtr = document.createElement('tr');
+    gtr.className = 'grand-total-row';
+    gtr.innerHTML = `<td>Total</td><td class="total">${total}</td>`;
+    tbody.appendChild(gtr);
+
     tbl.appendChild(tbody);
-    return tbl;
+    document.getElementById(containerId).appendChild(tbl);
   }
 
-  function mpill(m) { return `<span class="month-pill ${mClass[m]||''}">${m}</span>`; }
-
-  // ── 1. USR ──
-  const usrContainer = document.getElementById('invalid-usr-container');
-  if (usrInvalidRows.length === 0) {
-    usrContainer.innerHTML = '<p style="padding:16px;color:#888;font-size:13px;">No USR cascade rows found.</p>';
-  } else {
-    usrContainer.appendChild(makeTable(
-      ['Engineer','Project ID','Month','Workstep','Comment'],
-      usrInvalidRows.map(r => [r.eng, r.id, mpill(r.m), r.ws, r.c])
-    ));
-    document.getElementById('badge-usr').textContent = usrInvalidRows.length + ' rows';
-  }
-
-  // ── 2. Soft Rejections ──
-  const softRows = [];
-  function collectSoft(data) {
-    Object.entries(data).forEach(([eng, rows]) => {
-      const seen = new Set();
-      rows.forEach(r => {
-        const lc = r.c.toLowerCase();
-        if (lc.includes('soft rejection') || lc.includes('soft reject')) {
-          const k = `${eng}|${r.id}|${r.dt}|${r.c}`;
-          if (!seen.has(k)) { seen.add(k); softRows.push({eng, id:r.id, dt:r.dt||'', m:r.m, ws:r.ws, c:r.c}); }
-        }
-      });
-    });
-  }
-  collectSoft(CX_DATA);
-  collectSoft(ISA_DATA);
-
-  const softContainer = document.getElementById('invalid-soft-container');
-  if (softRows.length === 0) {
-    softContainer.innerHTML = '<p style="padding:16px;color:#888;font-size:13px;">No soft rejections found.</p>';
-  } else {
-    softContainer.appendChild(makeTable(
-      ['Engineer','Project ID','Date','Month','Workstep','Comment'],
-      softRows.map(r => [r.eng, r.id, r.dt, mpill(r.m), r.ws, r.c])
-    ));
-    document.getElementById('badge-soft').textContent = softRows.length + ' rows';
-  }
-
-  // ── 3. Exact Duplicates ──
-  const dupeRows = [];
-  function collectDupes(data) {
-    Object.entries(data).forEach(([eng, rows]) => {
-      const counts = {};
-      rows.forEach(r => {
-        const k = `${r.id}|${r.dt}|${r.c}`;
-        counts[k] = (counts[k] || 0) + 1;
-      });
-      const shown = new Set();
-      rows.forEach(r => {
-        const k = `${r.id}|${r.dt}|${r.c}`;
-        const dk = `${eng}|${k}`;
-        if (counts[k] > 1 && !shown.has(dk)) {
-          shown.add(dk);
-          dupeRows.push({eng, id:r.id, dt:r.dt||'', m:r.m, ws:r.ws, c:r.c, n:counts[k]});
-        }
-      });
-    });
-  }
-  collectDupes(CX_DATA);
-  collectDupes(ISA_DATA);
-
-  const dupesContainer = document.getElementById('invalid-dupes-container');
-  if (dupeRows.length === 0) {
-    dupesContainer.innerHTML = '<p style="padding:16px;color:#888;font-size:13px;">No exact duplicates found.</p>';
-  } else {
-    dupesContainer.appendChild(makeTable(
-      ['Engineer','Project ID','Date','Month','Workstep','Count','Comment'],
-      dupeRows.map(r => [r.eng, r.id, r.dt, mpill(r.m), r.ws,
-        `<span style="font-weight:700;color:#dc2626;">&times;${r.n}</span>`, r.c])
-    ));
-    document.getElementById('badge-dupes').textContent = dupeRows.length + ' unique entries';
-  }
+  renderSection('invalid-usr-container',  'badge-usr',  USR_DATA);
+  renderSection('invalid-soft-container', 'badge-soft', SOFT_DATA);
+  renderSection('invalid-dupes-container','badge-dupes', DUPE_DATA);
 })();
 </script>
 
