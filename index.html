@@ -1753,6 +1753,8 @@ function addExpandButton(cell, rows) {
 
   // ── Render ──
   function renderSection(containerId, badgeId, summaryData, detailMap, showDupeCount) {
+    // Derive count from detail rows so summary always matches what's displayed
+    summaryData.forEach(r => { r.count = (detailMap[r.eng] || []).length; });
     const total = summaryData.reduce((s, r) => s + r.count, 0);
     document.getElementById(badgeId).textContent = total + ' total';
 
