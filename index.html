@@ -1397,7 +1397,36 @@ sortedGroups.forEach(([eng, projects]) => {
   groupTr.innerHTML = `<td colspan="6">${eng}</td>`;
   tbody.appendChild(groupTr);
 
+  projects.forEach(proj => {
+    // Deduplicate by exact date + workstep + comment, then sort — do this FIRST so count is correct
+    const seenRepeat = new Set();
+    const sortedRows = proj.rows
+      .filter(r => {
+        const key = `${r.dt}|${r.ws}|${r.c}`;
+        if (seenRepeat.has(key)) return false;
+        seenRepeat.add(key); return true;
+      })
+      .sort((a, b) => {
+        const toMs = d => d ? new Date(d).getTime() : 0;
+        return toMs(a.dt) - toMs(b.dt);
+      });
+    proj.count = sortedRows.length;
+  });
+
   projects.sort((a, b) => b.count - a.count).forEach(proj => {
+    // Rebuild sorted deduped rows for rendering
+    const seenRepeat2 = new Set();
+    const sortedRows = proj.rows
+      .filter(r => {
+        const key = `${r.dt}|${r.ws}|${r.c}`;
+        if (seenRepeat2.has(key)) return false;
+        seenRepeat2.add(key); return true;
+      })
+      .sort((a, b) => {
+        const toMs = d => d ? new Date(d).getTime() : 0;
+        return toMs(a.dt) - toMs(b.dt);
+      });
+
     const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
     const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
     const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
@@ -1422,10 +1451,6 @@ sortedGroups.forEach(([eng, projects]) => {
     // Detail row
     const detailTr = document.createElement('tr');
     detailTr.className = 'proj-detail-row';
-    const sortedRows = [...proj.rows].sort((a, b) => {
-      const toMs = d => d ? new Date(d).getTime() : 0;
-      return toMs(a.dt) - toMs(b.dt);
-    });
     const innerHtml = sortedRows.map(r =>
       `<div class="detail-row">
         <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
