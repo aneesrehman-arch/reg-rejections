@@ -1397,7 +1397,7 @@ sortedGroups.forEach(([eng, projects]) => {
   groupTr.innerHTML = `<td colspan="6">${eng}</td>`;
   tbody.appendChild(groupTr);
 
-  projects.forEach(proj => {
+  projects.sort((a, b) => b.count - a.count).forEach(proj => {
     const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
     const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
     const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
