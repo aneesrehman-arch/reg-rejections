@@ -1036,48 +1036,6 @@ repeatData.forEach(p => {
   p.count = p.rows.length;
 });
 
-/* ── Build repeat table ── */
-const tbody = document.getElementById('repeat-tbody');
-const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
-
-repeatData.forEach((proj, idx) => {
-  const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
-  const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
-  const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
-
-  // Summary row
-  const tr = document.createElement('tr');
-  tr.className = 'proj-header';
-  tr.innerHTML = `
-    <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
-    <td style="font-size:12px;color:#555;">${proj.site}</td>
-    <td class="engineer">${proj.eng}</td>
-    <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
-    <td class="repeat-count-cell ${countClass}">${proj.count}</td>
-    <td>${proj.months.split(',').map(m => `<span class="month-pill ${monthClass[m.trim()]||''}">${m.trim()}</span>`).join(' ')}</td>
-    <td style="font-size:12px;">${proj.issue}</td>
-  `;
-  tr.addEventListener('click', () => {
-    tr.classList.toggle('expanded');
-    detailTr.classList.toggle('open');
-  });
-  tbody.appendChild(tr);
-
-  // Detail row
-  const detailTr = document.createElement('tr');
-  detailTr.className = 'proj-detail-row';
-  const innerHtml = proj.rows.map(r =>
-    `<div class="detail-row">
-      <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
-      <span class="detail-date">${r.dt||''}</span>
-      <span class="detail-ws">${r.ws}</span>
-      <span class="detail-comment">${r.c}</span>
-    </div>`
-  ).join('');
-  detailTr.innerHTML = `<td colspan="7"><div class="detail-inner">${innerHtml}</div></td>`;
-  tbody.appendChild(detailTr);
-});
-
 /* ── Engineer expand data (v2 — original comments + dt embedded) ── */
 const CX_DATA = {
   "Allison Schmidt": [
@@ -1399,6 +1357,48 @@ repeatData.forEach(p => {
     r.dt = pool[used[key]] || pool[0] || getDate(p.id, r.c);
     used[key]++;
   });
+});
+
+/* ── Build repeat table (after dates injected) ── */
+const tbody = document.getElementById('repeat-tbody');
+const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
+
+repeatData.forEach((proj, idx) => {
+  const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
+  const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
+  const wsShort = proj.ws === 'CONSTRUCTION_INITIAL_REVIEW' ? 'CIR' : proj.ws;
+
+  // Summary row
+  const tr = document.createElement('tr');
+  tr.className = 'proj-header';
+  tr.innerHTML = `
+    <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
+    <td style="font-size:12px;color:#555;">${proj.site}</td>
+    <td class="engineer">${proj.eng}</td>
+    <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
+    <td class="repeat-count-cell ${countClass}">${proj.count}</td>
+    <td>${proj.months.split(',').map(m => `<span class="month-pill ${monthClass[m.trim()]||''}">${m.trim()}</span>`).join(' ')}</td>
+    <td style="font-size:12px;">${proj.issue}</td>
+  `;
+  tr.addEventListener('click', () => {
+    tr.classList.toggle('expanded');
+    detailTr.classList.toggle('open');
+  });
+  tbody.appendChild(tr);
+
+  // Detail row
+  const detailTr = document.createElement('tr');
+  detailTr.className = 'proj-detail-row';
+  const innerHtml = proj.rows.map(r =>
+    `<div class="detail-row">
+      <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
+      <span class="detail-date">${r.dt||''}</span>
+      <span class="detail-ws">${r.ws}</span>
+      <span class="detail-comment">${r.c}</span>
+    </div>`
+  ).join('');
+  detailTr.innerHTML = `<td colspan="7"><div class="detail-inner">${innerHtml}</div></td>`;
+  tbody.appendChild(detailTr);
 });
 
 /* ── Build engineer expand buttons ── */
