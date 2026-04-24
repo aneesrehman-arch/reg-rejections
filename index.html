@@ -1387,6 +1387,10 @@ function buildExpandContent(rows) {
     if (seen.has(key)) return false;
     seen.add(key); return true;
   });
+  unique.sort((a, b) => {
+    const toMs = d => d ? new Date(d).getTime() : 0;
+    return toMs(a.dt) - toMs(b.dt);
+  });
   return unique.map(r => {
     const dt = r.dt || '';
     return `<div class="expand-row">
