@@ -310,7 +310,7 @@
           <td class="num heat-3">17</td>
           <td class="num heat-4">29</td>
           <td class="total">67</td>
-          <td class="num"><span class="repeat-badge">31 projects</span></td>
+          <td class="num"><span class="repeat-badge">6 projects</span></td>
         </tr>
         <tr>
           <td class="engineer">Raja Magunta</td>
@@ -466,7 +466,7 @@
     <div class="callouts">
       <h3>Key Callouts</h3>
       <ul class="callout-list">
-        <li><strong>Tamara Gil</strong> — 152 total; 82 in April alone; 31 repeat projects — highest volume by far</li>
+        <li><strong>Tamara Gil</strong> — 67 CIR rejections; 29 in April; 6 repeat projects — highest CIR volume</li>
         <li><strong>Raja Magunta + Ashutosh Pandey</strong> — combined 203 rejections; both spiked in March/April</li>
         <li><strong>Asad Kamran</strong> — 40 in January then steady at 13–15/month; 16 repeat projects</li>
         <li><strong>Allison Schmidt</strong> — 0 in January, then 26–32/month Feb–Apr; 19 repeat projects</li>
@@ -1014,7 +1014,7 @@
   <div class="section">
     <div class="section-header">
       <h2>Projects Rejected More Than Once</h2>
-      <span class="badge" style="background:#fee2e2;color:#991b1b;">47 projects</span>
+      <span class="badge" style="background:#fee2e2;color:#991b1b;">52 projects</span>
       <span style="font-size:12px;color:#777;margin-left:8px;">Click a row to expand rejection details</span>
     </div>
     <table id="repeat-table">
@@ -1077,16 +1077,39 @@ function showTab(name) {
 
 /* ── Repeat rejections data ── */
 const repeatData = [
-  { id:'17501882', site:'(see tracker)', eng:'Raja Magunta', ws:'CONSTRUCTION_INITIAL_REVIEW', count:8, months:'April', issue:'Structure Owner Info Wrong (VZW vs ASR)',
+  { id:'17480665', site:'(see tracker)', eng:'Tamara Gil', ws:'CONSTRUCTION_INITIAL_REVIEW', count:6, months:'March/April', issue:'Structure form does not match FAA filing info — coords, GE, height mismatch',
     rows:[
-      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong — this is a VZW site per the ASR'},
-      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
-      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong, per ASR this is a VZW site'},
-      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
-      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong — please correct ownership, VZW site per ASR'},
-      {m:'April',ws:'CIR',c:'Structure Owner Info Missing/Wrong, per ASR this is a VZW site'},
-      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
-      {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
+      {m:'March',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey'},
+      {m:'March',ws:'CIR',c:'Structure form does not match FAA filing info - coords, GE and structure height do not match FAA'},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA filing info - coordinates do not match FAA and AGL should be 255\' to match as well'},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA filing info - Please amend coordinates under the Structure Form as follows: 33° 09\' 41.00\'N, 85° 08\' 11.91\'W.'},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA filing info'},
+      {m:'April',ws:'CIR',c:'Structure form does not match FAA filing info - please update the ground elevation to match the FAA filing.'},
+    ]},
+  { id:'17501882', site:'(see tracker)', eng:'Tamara Gil', ws:'CONSTRUCTION_INITIAL_REVIEW', count:2, months:'April', issue:'Structure Owner Info Missing/Wrong — VZW site per ASR',
+    rows:[
+      {m:'April',ws:'CIR',c:'Structure Owner Information Missing/Wrong - please correct ownership - this is a VZW site per the ASR'},
+      {m:'April',ws:'CIR',c:'Structure Owner Information Missing/Wrong, per ASR this is a VZW site.'},
+    ]},
+  { id:'17059314', site:'(see tracker)', eng:'Tamara Gil', ws:'CONSTRUCTION_INITIAL_REVIEW', count:2, months:'February/April', issue:'Missing FAA/FCC info; updated document required for new study',
+    rows:[
+      {m:'February',ws:'CIR',c:'Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting) - 2025-ASO-535-OE does not apply to this site. it appears it should be 2005-ASO-535-OE'},
+      {m:'April',ws:'CIR',c:'Updated document required - since this 3rd party owner\'s study was terminated & the request in FUZE requires that we refile for different site elevation & overall heights, this 3rd party owner will need to submit a new study to reinstate their earlier study that was terminated.'},
+    ]},
+  { id:'16829509', site:'(see tracker)', eng:'Tamara Gil', ws:'CONSTRUCTION_INITIAL_REVIEW', count:2, months:'February', issue:'Structure type wrong; missing FAA/FCC info',
+    rows:[
+      {m:'February',ws:'CIR',c:'Structure type wrong or missing'},
+      {m:'February',ws:'CIR',c:'Missing existing FAA/FCC info (ASN #, ASR #, Marking/Lighting)'},
+    ]},
+  { id:'17310443', site:'(see tracker)', eng:'Tamara Gil', ws:'CONSTRUCTION_INITIAL_REVIEW', count:2, months:'February', issue:'Structure type missing; height increasing without airspace study',
+    rows:[
+      {m:'February',ws:'CIR',c:'Structure type missing, Height is increasing please provide air space study'},
+      {m:'February',ws:'CIR',c:'Structure type wrong or missing'},
+    ]},
+  { id:'17507531', site:'(see tracker)', eng:'Tamara Gil', ws:'CONSTRUCTION_INITIAL_REVIEW', count:2, months:'March', issue:'Missing airspace for new height; missing documents (1A/2C, AM cert)',
+    rows:[
+      {m:'March',ws:'CIR',c:'Please provide an updated airspace for the new proposed height to confirm FAA/ASR requirements.'},
+      {m:'March',ws:'CIR',c:'Missing Document (1A/2C, Airspace, AM certificate)'},
     ]},
   { id:'17043458', site:'(see tracker)', eng:'Asad Kamran', ws:'CONSTRUCTION_INITIAL_REVIEW', count:8, months:'January', issue:"Tower height in FUZE doesn't match FAA/ASR",
     rows:[
