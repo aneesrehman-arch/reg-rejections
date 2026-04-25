@@ -1821,7 +1821,7 @@ sortedGroups.forEach(([eng, projects]) => {
   groupTr.className = 'eng-group-row';
   const rec = ENG_REC[eng] || '';
   groupTr.innerHTML = `
-    <td colspan="2" style="white-space:nowrap">${eng}</td>
+    <td colspan="2" style="white-space:nowrap">${eng.replace(' (ISA)', '')}</td>
     <td colspan="3" class="eng-rec-cell">${rec ? '💡 ' + rec : ''}</td>
   `;
   tbody.appendChild(groupTr);
