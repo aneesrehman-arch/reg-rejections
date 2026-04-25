@@ -509,7 +509,7 @@
           <td class="num heat-2">14</td>
           <td class="num heat-2">23</td>
           <td class="total">73</td>
-          <td class="num"><span class="repeat-badge">2 projects</span></td>
+          <td class="num"><span class="repeat-badge">4 projects</span></td>
         </tr>
         <tr>
           <td class="engineer">Allison Schmidt</td>
@@ -563,7 +563,7 @@
           <td class="num heat-1">6</td>
           <td class="num heat-2">17</td>
           <td class="total">36</td>
-          <td class="num"><span class="repeat-badge low">1 project</span></td>
+          <td class="num"><span class="repeat-badge low">—</span></td>
         </tr>
         <tr>
           <td class="engineer">Asad Kamran</td>
@@ -1013,11 +1013,11 @@
 <div id="tab-repeats" class="tab-panel">
   <div class="section">
     <div class="section-header">
-      <h2>Projects Rejected More Than Once</h2>
-      <span class="badge" style="background:#fee2e2;color:#991b1b;">66 projects</span>
+      <h2>REG ENG CX — Projects Rejected More Than Once</h2>
+      <span class="badge" style="background:#fee2e2;color:#991b1b;">37 projects</span>
       <span style="font-size:12px;color:#777;margin-left:8px;">Click a row to expand rejection details</span>
     </div>
-    <table id="repeat-table">
+    <table id="repeat-table-cx">
       <thead>
         <tr>
           <th>Project ID</th>
@@ -1027,9 +1027,26 @@
           <th>Primary Issue</th>
         </tr>
       </thead>
-      <tbody id="repeat-tbody">
-        <!-- populated by JS -->
-      </tbody>
+      <tbody id="repeat-tbody-cx"><!-- populated by JS --></tbody>
+    </table>
+  </div>
+  <div class="section" style="margin-top:24px">
+    <div class="section-header">
+      <h2>REG ENG ISA — Projects Rejected More Than Once</h2>
+      <span class="badge isa">6 projects</span>
+      <span style="font-size:12px;color:#777;margin-left:8px;">Click a row to expand rejection details</span>
+    </div>
+    <table id="repeat-table-isa">
+      <thead>
+        <tr>
+          <th>Project ID</th>
+          <th>Workstep</th>
+          <th class="num">Rejections</th>
+          <th>Months Affected</th>
+          <th>Primary Issue</th>
+        </tr>
+      </thead>
+      <tbody id="repeat-tbody-isa"><!-- populated by JS --></tbody>
     </table>
   </div>
 </div><!-- /tab-repeats -->
@@ -1275,12 +1292,38 @@ const repeatData = [
       {m:'April',ws:'CIR',c:'Coordinates/GE in FUZE do not match 1A Survey; Airspace does not match FUZE details'},
       {m:'April',ws:'CIR',c:"'Update Station Records' Rejected"},
     ]},
-  { id:'17029018', site:'(see tracker)', eng:'Yousuf Moiz (ISA)', ws:'CALL_SIGN', count:4, months:'Jan, Feb, Mar', issue:'PSD contours exceed 50 sq mi unlicensed — rejected 3 months in a row',
+  { id:'17029018', site:'(see tracker)', eng:'Belem Rios (ISA)', ws:'CALL_SIGN', count:4, months:'January/February/March', issue:'PSD contours exceed 50 sq mi unlicensed — cannot file PSD; resubmit non-PSD',
     rows:[
-      {m:'January',ws:'CALL_SIGN',c:"PSD contours extend into >50 sq miles of unlicensed area — can't currently file PSD"},
-      {m:'February',ws:'CALL_SIGN',c:"PSD contours extend into >50 sq miles of unlicensed area — can't currently file PSD"},
-      {m:'February',ws:'CALL_SIGN',c:"PSD contours extend into >50 sq miles of unlicensed area — can't currently file PSD"},
-      {m:'March',ws:'CALL_SIGN',c:"DO NOT SUBMIT THIS PSD — contours extend into >50 sq miles of unlicensed area"},
+      {m:'January',dt:'1/7/2026',ws:'CALL_SIGN',c:"PSD contours extend into greater than 50 sq miles of unlicensed area — can't currently file PSD with FCC; resubmit non-PSD"},
+      {m:'February',dt:'2/5/2026',ws:'CALL_SIGN',c:"PSD contours extend into greater than 50 sq miles of unlicensed area — can't currently file PSD with FCC; resubmit non-PSD"},
+      {m:'February',dt:'2/11/2026',ws:'CALL_SIGN',c:"PSD contours extend into greater than 50 sq miles of unlicensed area — can't currently file PSD with FCC; resubmit non-PSD"},
+      {m:'March',dt:'3/2/2026',ws:'CALL_SIGN',c:"DO NOT SUBMIT THIS PSD — contours extend into greater than 50 sq miles of unlicensed area; resubmit non-PSD"},
+    ]},
+  { id:'17498257', site:'(see tracker)', eng:'Belem Rios (ISA)', ws:'CALL_SIGN', count:3, months:'March', issue:'850 extends into GA13-Early; reduce contours or provide field strength agreement',
+    rows:[
+      {m:'March',dt:'3/19/2026',ws:'CALL_SIGN',c:"850 Field Strength/Extension Agreement Insufficient — 850 extends into GA13-Early, please reduce contours or provide a field strength agreement"},
+      {m:'March',dt:'3/19/2026',ws:'CALL_SIGN',c:"850 Field Strength/Extension Agreement Insufficient — 850 extends into GA13-Early, please reduce contours or provide a field strength agreement"},
+      {m:'March',dt:'3/31/2026',ws:'CALL_SIGN',c:"Please upload a -110 RSRP scatter plot with SAB to verify coverage into GA13"},
+    ]},
+  { id:'17546037', site:'(see tracker)', eng:'Belem Rios (ISA)', ws:'CALL_SIGN', count:2, months:'February', issue:'Missing -110 RSRP contours; 32 dBu required for coverage near unlicensed area',
+    rows:[
+      {m:'February',dt:'2/9/2026',ws:'CALL_SIGN',c:"Please load -110 RSRP — almost looks like this will require a field strength agreement"},
+      {m:'February',dt:'2/10/2026',ws:'CALL_SIGN',c:"Must have 32 dBu contours for anything that could possibly go into greater than 50 sq miles"},
+    ]},
+  { id:'17498202', site:'(see tracker)', eng:'Belem Rios (ISA)', ws:'CALL_SIGN', count:2, months:'March', issue:'850B extends into GA13-Early; reduce contours or upload FSA',
+    rows:[
+      {m:'March',dt:'3/12/2026',ws:'CALL_SIGN',c:"850B extends into GA13-Early, please reduce contours or upload a Field Strength Agreement (FSA)"},
+      {m:'March',dt:'3/12/2026',ws:'CALL_SIGN',c:"850B extends into GA13-Early, please reduce contours or upload a Field Strength Agreement (FSA)"},
+    ]},
+  { id:'17501946', site:'(see tracker)', eng:'Yousuf Moiz (ISA)', ws:'CALL_SIGN', count:2, months:'January/February', issue:'PSD contours exceed 50 sq mi unlicensed; non-PSD file missing/empty',
+    rows:[
+      {m:'January',dt:'1/8/2026',ws:'CALL_SIGN',c:"Site extends into greater than 50 sq miles of unlicensed area — currently unable to file PSD; resubmit non-PSD or wait until issues resolved"},
+      {m:'February',dt:'2/16/2026',ws:'CALL_SIGN',c:"Nothing in the NON PSD zipped file — please delete the ones from December"},
+    ]},
+  { id:'17029156', site:'(see tracker)', eng:'Yousuf Moiz (ISA)', ws:'CALL_SIGN', count:2, months:'January/February', issue:'PSD contours exceed 50 sq mi unlicensed; Sorrel non-PSD zipped folder empty',
+    rows:[
+      {m:'January',dt:'1/8/2026',ws:'CALL_SIGN',c:"Site extends into greater than 50 sq miles of unlicensed area — currently unable to file PSD; resubmit non-PSD or wait until issues resolved"},
+      {m:'February',dt:'2/16/2026',ws:'CALL_SIGN',c:"Nothing in the Sorrel non-PSD zipped folder — please delete the ones from December"},
     ]},
   { id:'16933237', site:'(see tracker)', eng:'Ashutosh Pandey', ws:'CONSTRUCTION_INITIAL_REVIEW', count:4, months:'Mar, Apr', issue:'Missing FAA/FCC info (Mar); structure form ≠ FAA elevation (Apr)',
     rows:[
@@ -1912,7 +1955,8 @@ repeatData.forEach(p => {
 });
 
 /* ── Build repeat table (after dates injected) ── */
-const tbody = document.getElementById('repeat-tbody');
+const tbodyCx  = document.getElementById('repeat-tbody-cx');
+const tbodyIsa = document.getElementById('repeat-tbody-isa');
 const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
 
 // Filter out unassigned engineers
@@ -1931,7 +1975,8 @@ const ENG_REC = {
   "Priyatham Tamma":       "Cross-check FUZE coordinates and ground elevation against the 1A Survey before every CIR submission. A coordinates mismatch on the same project across multiple submissions means the source data is not being updated between attempts.",
   "Victor Durosomo":       "Confirm coordinates map to the exact structure location (not street centerline or approximation) — use a Google Earth plot with RE/SAQ assistance if needed. Update structure form and NEPA docs at the same time to avoid downstream delays.",
   "Mazhar Shahzad":        "Verify 32 dBu SAB contours remain within coverage boundaries for gulf and border areas before CALL_SIGN submission. Confirm field strength agreements are in place for any extension into non-VZW markets. April resurgence (28) after quiet Feb/Mar suggests re-auditing the submission workflow.",
-  "Yousuf Moiz (ISA)":     "Check 32 dBu and unlicensed area thresholds before every CALL_SIGN submission. Ensure all zipped shp files are non-empty and correctly labelled before upload. Field strength agreements must be confirmed before submitting sites near Houma or non-VZW markets."
+  "Yousuf Moiz (ISA)":     "Check 32 dBu and unlicensed area thresholds before every CALL_SIGN submission. Ensure all zipped shp files are non-empty and correctly labelled before upload. Field strength agreements must be confirmed before submitting sites near Houma or non-VZW markets.",
+  "Belem Rios (ISA)":      "Run a pre-submission unlicensed area check against the 50 sq mi PSD threshold before every CALL_SIGN filing. When contours exceed 50 sq miles, do not resubmit as PSD — place on PSD Hold and resubmit as non-PSD immediately. Verify 850 band contours remain within SAB and confirm field strength agreements are in place before submitting near GA-13 (Early)."
 };
 
 // Group by engineer, sort groups by total rejections desc
@@ -1947,6 +1992,7 @@ const sortedGroups = Object.entries(engGroups).sort((a, b) => {
 });
 
 sortedGroups.forEach(([eng, projects]) => {
+  const tbody = eng.includes('(ISA)') ? tbodyIsa : tbodyCx;
   // Engineer group header row
   const groupTr = document.createElement('tr');
   groupTr.className = 'eng-group-row';
