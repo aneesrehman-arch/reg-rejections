@@ -2004,6 +2004,13 @@ sortedGroups.forEach(([eng, projects]) => {
   tbody.appendChild(groupTr);
 
   projects.forEach(proj => {
+    const seen = new Set();
+    proj.rows = proj.rows.filter(r => {
+      if (!r.dt) return true;
+      const k = `${r.dt}|${r.ws}|${r.c}`;
+      if (seen.has(k)) return false;
+      seen.add(k); return true;
+    });
     proj.count = proj.rows.length;
   });
 
