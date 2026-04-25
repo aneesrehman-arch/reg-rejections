@@ -2004,34 +2004,14 @@ sortedGroups.forEach(([eng, projects]) => {
   tbody.appendChild(groupTr);
 
   projects.forEach(proj => {
-    // Deduplicate by exact date + workstep + comment, then sort — do this FIRST so count is correct
-    const seenRepeat = new Set();
-    const sortedRows = proj.rows
-      .filter(r => {
-        const key = `${r.dt}|${r.ws}|${r.c}`;
-        if (seenRepeat.has(key)) return false;
-        seenRepeat.add(key); return true;
-      })
-      .sort((a, b) => {
-        const toMs = d => d ? new Date(d).getTime() : 0;
-        return toMs(a.dt) - toMs(b.dt);
-      });
-    proj.count = sortedRows.length;
+    proj.count = proj.rows.length;
   });
 
   projects.sort((a, b) => b.count - a.count).forEach(proj => {
-    // Rebuild sorted deduped rows for rendering
-    const seenRepeat2 = new Set();
-    const sortedRows = proj.rows
-      .filter(r => {
-        const key = `${r.dt}|${r.ws}|${r.c}`;
-        if (seenRepeat2.has(key)) return false;
-        seenRepeat2.add(key); return true;
-      })
-      .sort((a, b) => {
-        const toMs = d => d ? new Date(d).getTime() : 0;
-        return toMs(a.dt) - toMs(b.dt);
-      });
+    const sortedRows = proj.rows.slice().sort((a, b) => {
+      const toMs = d => d ? new Date(d).getTime() : 0;
+      return toMs(a.dt) - toMs(b.dt);
+    });
 
     const countClass = proj.count >= 6 ? 'r-high' : proj.count >= 4 ? 'r-med' : 'r-low';
     const wsTag = proj.ws === 'CALL_SIGN' ? 'tag-cs' : proj.ws === 'ASR' ? 'tag-asr' : 'tag-cir';
