@@ -2222,12 +2222,7 @@ sortedGroups.forEach(([eng, projects]) => {
 const wsStyle = {CIR:'tag-cir', ASR:'tag-asr', CS:'tag-cs'};
 
 function buildExpandContent(rows) {
-  const seen = new Set();
-  const sorted = rows.filter(r => {
-    const key = `${r.id}|${r.dt}|${r.c}`;
-    if (seen.has(key)) return false;
-    seen.add(key); return true;
-  }).sort((a, b) => {
+  const sorted = rows.slice().sort((a, b) => {
     const toMs = d => d ? new Date(d).getTime() : 0;
     return toMs(a.dt) - toMs(b.dt);
   });
@@ -2261,11 +2256,7 @@ function addExpandButton(cell, rows) {
   cell.appendChild(btn);
   cell.appendChild(panel);
   const totalCell = cell.closest('tr').querySelector('.total');
-  if (totalCell) {
-    const seen = new Set();
-    const deduped = rows.filter(r => { const k=`${r.id}|${r.dt}|${r.c}`; if(seen.has(k))return false; seen.add(k);return true; });
-    totalCell.textContent = deduped.length;
-  }
+  if (totalCell) totalCell.textContent = rows.length;
 }
 
 (function initEngineers() {
