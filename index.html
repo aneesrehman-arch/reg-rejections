@@ -1060,7 +1060,7 @@
   <div class="section">
     <div class="section-header">
       <h2>REG ENG CX — Projects Rejected More Than Once</h2>
-      <span class="badge" style="background:#fee2e2;color:#991b1b;">11 projects</span>
+      <span class="badge" id="badge-cx-repeat" style="background:#fee2e2;color:#991b1b;">11 projects</span>
       <span style="font-size:12px;color:#777;margin-left:8px;">Click a row to expand rejection details</span>
     </div>
     <table id="repeat-table-cx">
@@ -1079,7 +1079,7 @@
   <div class="section" style="margin-top:24px">
     <div class="section-header">
       <h2>REG ENG ISA — Projects Rejected More Than Once</h2>
-      <span class="badge isa">5 projects</span>
+      <span class="badge isa" id="badge-isa-repeat">5 projects</span>
       <span style="font-size:12px;color:#777;margin-left:8px;">Click a row to expand rejection details</span>
     </div>
     <table id="repeat-table-isa">
@@ -1830,6 +1830,12 @@ const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',A
 
 // Filter out unassigned engineers
 const filteredRepeat = repeatData.filter(p => !p.eng.toLowerCase().includes('unassign'));
+
+const cxCount  = filteredRepeat.filter(p => !p.eng.includes('(ISA)')).length;
+const isaCount = filteredRepeat.filter(p =>  p.eng.includes('(ISA)')).length;
+const fmt = n => n === 1 ? '1 project' : `${n} projects`;
+document.getElementById('badge-cx-repeat').textContent  = fmt(cxCount);
+document.getElementById('badge-isa-repeat').textContent = fmt(isaCount);
 
 const ENG_REC = {
   "Tamara Gil":            "Cross-check FUZE coordinates, ground elevation, and structure ownership against the 1A Survey and ASR before every CIR submission. With 82 rejections in April alone across 31 repeat projects, most issues are recurring: confirm structure ownership (VZW vs. tower company) at project setup and add a one-step coords/GE verification to the pre-submission checklist.",
