@@ -1931,10 +1931,21 @@ function buildExpandContent(rows) {
   const idCount = {};
   rows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
 
-  const sorted = rows.slice().sort((a, b) => {
-    const toMs = d => d ? new Date(d).getTime() : 0;
-    return toMs(a.dt) - toMs(b.dt);
-  });
+  const toMs = d => d ? new Date(d).getTime() : 0;
+
+  // Group rows by project ID, each group sorted by date
+  const groups = {};
+  rows.forEach(r => { (groups[r.id] = groups[r.id] || []).push(r); });
+  Object.values(groups).forEach(g => g.sort((a, b) => toMs(a.dt) - toMs(b.dt)));
+
+  // Repeat groups first, then singles — each set sorted by earliest date in group
+  const repeatGroups = Object.entries(groups).filter(([id]) => idCount[id] > 1);
+  const singleGroups = Object.entries(groups).filter(([id]) => idCount[id] === 1);
+  repeatGroups.sort((a, b) => toMs(a[1][0].dt) - toMs(b[1][0].dt));
+  singleGroups.sort((a, b) => toMs(a[1][0].dt) - toMs(b[1][0].dt));
+
+  const sorted = [...repeatGroups, ...singleGroups].flatMap(([, g]) => g);
+
   return sorted.map(r => {
     const dt = r.dt || '';
     const repeatCls = idCount[r.id] > 1 ? ' is-repeat' : '';
