@@ -2248,9 +2248,7 @@ function addExpandButton(cell, rows) {
     const tbl = document.createElement('table');
     const thead = document.createElement('thead');
     const htr = document.createElement('tr');
-    const cols = showDupeCount
-      ? ['','Regulatory Engineer','Count','Project ID','Date','Month','Workstep','×','Comment']
-      : ['','Regulatory Engineer','Count','Project ID','Date','Month','Workstep','Comment'];
+    const cols = ['', 'Regulatory Engineer', 'Count'];
     cols.forEach((label, i) => {
       const th = document.createElement('th');
       th.textContent = label;
@@ -2280,15 +2278,9 @@ function addExpandButton(cell, rows) {
       tdCnt.className = 'total' + (heat ? ' ' + heat : '');
       tdCnt.textContent = r.count;
 
-      // Detail cells (hidden initially) — rendered inline as additional columns
-      const detailColCount = showDupeCount ? 6 : 5;
-      const tdSpacer = document.createElement('td');
-      tdSpacer.colSpan = detailColCount;
-
       tr.appendChild(tdChev);
       tr.appendChild(tdEng);
       tr.appendChild(tdCnt);
-      tr.appendChild(tdSpacer);
       tbody.appendChild(tr);
 
       // Detail sub-row
