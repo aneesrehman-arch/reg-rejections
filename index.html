@@ -2344,13 +2344,20 @@ function addExpandButton(cell, rows) {
             td.innerHTML = cell;
             td.style.cssText = 'padding:4px 8px;border-bottom:1px solid #f0f1f5;vertical-align:top';
             if (showDupeCount && ci === 4) td.style.textAlign = 'center';
-            if (ci === cells.length - 1) { td.style.color = '#555'; td.style.maxWidth = '420px'; }
+            if (ci === cells.length - 1) { td.style.color = '#555'; td.style.width = '55%'; }
             itr.appendChild(td);
           });
           innerBody.appendChild(itr);
         });
         innerTbl.appendChild(innerBody);
         detailTd.appendChild(innerTbl);
+
+        if (dedupedRows.length < r.count) {
+          const note = document.createElement('p');
+          note.style.cssText = 'font-size:11px;color:#9ca3af;margin:6px 0 0;font-style:italic';
+          note.textContent = `Showing ${dedupedRows.length} representative examples — ${r.count} total in source data.`;
+          detailTd.appendChild(note);
+        }
       }
 
       detailTr.appendChild(detailTd);
