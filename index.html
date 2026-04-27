@@ -2299,7 +2299,15 @@ function addExpandButton(cell, rows) {
       detailTd.style.padding = '0 16px 10px 32px';
       detailTd.style.background = '#fafbfd';
 
-      if (rows.length === 0) {
+      // Deduplicate rows by date + workstep + comment
+      const seenRows = new Set();
+      const dedupedRows = rows.filter(row => {
+        const k = `${row.dt}|${row.ws}|${row.c}`;
+        if (seenRows.has(k)) return false;
+        seenRows.add(k); return true;
+      });
+
+      if (dedupedRows.length === 0) {
         detailTd.innerHTML = '<p style="color:#aaa;font-size:12px;padding:6px 0">No detail available.</p>';
       } else {
         const innerTbl = document.createElement('table');
@@ -2319,7 +2327,7 @@ function addExpandButton(cell, rows) {
         innerHead.appendChild(iHtr);
         innerTbl.appendChild(innerHead);
         const innerBody = document.createElement('tbody');
-        rows.forEach(row => {
+        dedupedRows.forEach(row => {
           const itr = document.createElement('tr');
           const ws = wsShort(row.ws || '');
           const wsTagCls = ws==='CIR'?'tag-cir':ws==='ASR'?'tag-asr':ws==='CS'?'tag-cs':'';
