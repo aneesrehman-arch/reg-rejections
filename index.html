@@ -1969,6 +1969,12 @@ function addExpandButton(cell, rows) {
   cell.appendChild(panel);
   const totalCell = cell.closest('tr').querySelector('.total');
   if (totalCell) totalCell.textContent = rows.length;
+
+  const idCount = {};
+  rows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
+  const repeatCount = Object.values(idCount).filter(c => c > 1).length;
+  const repeatBadge = cell.closest('tr').querySelector('.repeat-badge');
+  if (repeatBadge) repeatBadge.textContent = repeatCount === 1 ? '1 project' : `${repeatCount} projects`;
 }
 
 (function initEngineers() {
