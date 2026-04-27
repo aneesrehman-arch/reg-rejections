@@ -1828,14 +1828,41 @@ const tbodyCx  = document.getElementById('repeat-tbody-cx');
 const tbodyIsa = document.getElementById('repeat-tbody-isa');
 const monthClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr'};
 
-// Filter out unassigned engineers
-const filteredRepeat = repeatData.filter(p => !p.eng.toLowerCase().includes('unassign'));
+// Build repeat projects directly from CX_DATA / ISA_DATA so counts always
+// match the overview tab. repeatData is kept only as an issue-text lookup.
+const repeatIssueLookup = {};
+repeatData.forEach(p => { repeatIssueLookup[p.id] = p.issue || ''; });
 
-const cxCount  = filteredRepeat.filter(p => !p.eng.includes('(ISA)')).length;
-const isaCount = filteredRepeat.filter(p =>  p.eng.includes('(ISA)')).length;
+function deriveRepeats(engineerData, engSuffix) {
+  const out = [];
+  Object.entries(engineerData).forEach(([eng, rows]) => {
+    const idCount = {};
+    rows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
+    Object.entries(idCount).filter(([, c]) => c > 1).forEach(([id]) => {
+      const projRows = rows.filter(r => r.id === id);
+      const months = [...new Set(projRows.map(r => r.m))].join(', ');
+      out.push({
+        id,
+        eng: engSuffix ? eng + engSuffix : eng,
+        ws: projRows[0].ws,
+        count: projRows.length,
+        months,
+        issue: repeatIssueLookup[id] || '',
+        rows: projRows
+      });
+    });
+  });
+  return out;
+}
+
+const filteredRepeat = [
+  ...deriveRepeats(CX_DATA,  ''),
+  ...deriveRepeats(ISA_DATA, ' (ISA)')
+];
+
 const fmt = n => n === 1 ? '1 project' : `${n} projects`;
-document.getElementById('badge-cx-repeat').textContent  = fmt(cxCount);
-document.getElementById('badge-isa-repeat').textContent = fmt(isaCount);
+document.getElementById('badge-cx-repeat').textContent  = fmt(filteredRepeat.filter(p => !p.eng.includes('(ISA)')).length);
+document.getElementById('badge-isa-repeat').textContent = fmt(filteredRepeat.filter(p =>  p.eng.includes('(ISA)')).length);
 
 const ENG_REC = {
   "Tamara Gil":            "Cross-check FUZE coordinates, ground elevation, and structure ownership against the 1A Survey and ASR before every CIR submission. With 82 rejections in April alone across 31 repeat projects, most issues are recurring: confirm structure ownership (VZW vs. tower company) at project setup and add a one-step coords/GE verification to the pre-submission checklist.",
