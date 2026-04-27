@@ -1840,14 +1840,19 @@ function deriveRepeats(engineerData, engSuffix) {
     rows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
     Object.entries(idCount).filter(([, c]) => c > 1).forEach(([id]) => {
       const projRows = rows.filter(r => r.id === id);
+      const sorted = projRows.slice().sort((a, b) => {
+        const t = d => d ? new Date(d).getTime() : 0;
+        return t(a.dt) - t(b.dt);
+      });
       const months = [...new Set(projRows.map(r => r.m))].join(', ');
+      const issue = repeatIssueLookup[id] || sorted[0].c;
       out.push({
         id,
         eng: engSuffix ? eng + engSuffix : eng,
         ws: projRows[0].ws,
         count: projRows.length,
         months,
-        issue: repeatIssueLookup[id] || '',
+        issue,
         rows: projRows
       });
     });
