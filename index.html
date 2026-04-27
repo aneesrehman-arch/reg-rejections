@@ -2309,11 +2309,13 @@ function addExpandButton(cell, rows) {
         const iCols = showDupeCount
           ? ['Project ID','Date','Month','Workstep','×','Comment']
           : ['Project ID','Date','Month','Workstep','Comment'];
+        const colWidths = {'Project ID':'90px','Date':'74px','Month':'72px','Workstep':'68px','×':'28px','Comment':''};
         iCols.forEach(h => {
           const th = document.createElement('th');
           th.textContent = h;
           th.style.cssText = 'text-align:left;padding:4px 8px;background:#f0f4ff;font-size:10px;font-weight:600;color:#555;border-bottom:1px solid #e8eaf0';
-          if (h === '×') { th.style.textAlign = 'center'; th.style.width = '28px'; }
+          if (colWidths[h]) th.style.width = colWidths[h];
+          if (h === '×') th.style.textAlign = 'center';
           iHtr.appendChild(th);
         });
         innerHead.appendChild(iHtr);
@@ -2344,7 +2346,7 @@ function addExpandButton(cell, rows) {
             td.innerHTML = cell;
             td.style.cssText = 'padding:4px 8px;border-bottom:1px solid #f0f1f5;vertical-align:top';
             if (showDupeCount && ci === 4) td.style.textAlign = 'center';
-            if (ci === cells.length - 1) { td.style.color = '#555'; td.style.width = '55%'; }
+            if (ci === cells.length - 1) { td.style.color = '#333'; td.style.fontSize = '12px'; td.style.lineHeight = '1.5'; td.style.wordBreak = 'break-word'; td.style.whiteSpace = 'normal'; }
             itr.appendChild(td);
           });
           innerBody.appendChild(itr);
