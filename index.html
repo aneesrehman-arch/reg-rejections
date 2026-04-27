@@ -94,7 +94,7 @@
     td.num { text-align: center; color: #374151; }
     td.num.zero { color: #d1d5db; }
     td.total { text-align: center; font-weight: 700; }
-    td.engineer { font-weight: 600; }
+    td.engineer { font-weight: 600; position: relative; }
 
     .workstep-tag {
       display: inline-block; font-size: 10px; font-weight: 700;
@@ -255,9 +255,12 @@
     }
     .expand-btn:hover { background: #fff5f5; border-color: #fca5a5; }
     .eng-expand {
-      margin-top: 8px; font-size: 11px;
-      border-top: 1px solid #e8eaf0; padding-top: 6px;
-      max-width: 500px;
+      position: absolute; left: 0; z-index: 50;
+      min-width: 640px;
+      margin-top: 4px; font-size: 11px;
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 6px; padding: 8px 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.10);
     }
     .expand-row {
       display: flex; align-items: flex-start;
