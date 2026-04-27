@@ -268,6 +268,10 @@
       border-bottom: 1px solid #f8f9fb; line-height: 1.4;
     }
     .expand-row:last-child { border-bottom: none; }
+    .expand-row.is-repeat {
+      background: #fff7ed; border-left: 3px solid #f97316; padding-left: 6px;
+    }
+    .expand-row.is-repeat .exp-id { color: #c2410c; font-weight: 700; }
     .exp-id {
       font-family: 'Courier New', monospace; font-size: 10px;
       color: #999; width: 68px; flex-shrink: 0; padding-top: 1px;
@@ -1926,13 +1930,17 @@ sortedGroups.forEach(([eng, projects]) => {
 const wsStyle = {CIR:'tag-cir', ASR:'tag-asr', CS:'tag-cs'};
 
 function buildExpandContent(rows) {
+  const idCount = {};
+  rows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
+
   const sorted = rows.slice().sort((a, b) => {
     const toMs = d => d ? new Date(d).getTime() : 0;
     return toMs(a.dt) - toMs(b.dt);
   });
   return sorted.map(r => {
     const dt = r.dt || '';
-    return `<div class="expand-row">
+    const repeatCls = idCount[r.id] > 1 ? ' is-repeat' : '';
+    return `<div class="expand-row${repeatCls}">
       <span class="exp-id">${r.id}</span>
       <span class="exp-date">${dt}</span>
       <span class="month-pill ${monthClass[r.m]||''}">${r.m.substring(0,3)}</span>
