@@ -2082,15 +2082,24 @@ function addExpandButton(cell, rows) {
   cell.appendChild(panel);
 }
 
+function filterEngRows(rows) {
+  return rows.filter(r => {
+    const c = r.c.trim();
+    return c !== "'Update Station Records' Rejected" &&
+           c !== "'Update Station Records' Approved" &&
+           !c.toLowerCase().includes('soft rejection');
+  });
+}
+
 (function initEngineers() {
   const tables = document.querySelectorAll('#tab-overview .section table');
   tables[0].querySelectorAll('td.engineer').forEach(cell => {
     const name = cell.textContent.trim();
-    if (CX_DATA[name]) addExpandButton(cell, CX_DATA[name]);
+    if (CX_DATA[name]) addExpandButton(cell, filterEngRows(CX_DATA[name]));
   });
   tables[1].querySelectorAll('td.engineer').forEach(cell => {
     const name = cell.textContent.trim();
-    if (ISA_DATA[name]) addExpandButton(cell, ISA_DATA[name]);
+    if (ISA_DATA[name]) addExpandButton(cell, filterEngRows(ISA_DATA[name]));
   });
 })();
 
