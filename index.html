@@ -2063,8 +2063,6 @@ function addExpandButton(cell, rows) {
   cell.appendChild(document.createElement('br'));
   cell.appendChild(btn);
   cell.appendChild(panel);
-  const totalCell = cell.closest('tr').querySelector('.total');
-  if (totalCell) totalCell.textContent = rows.length;
 }
 
 (function initEngineers() {
