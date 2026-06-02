@@ -2092,15 +2092,34 @@ function filterEngRows(rows) {
   });
 }
 
+function updateRepeatBadge(cell, rows) {
+  const idCount = {};
+  rows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
+  const n = Object.values(idCount).filter(c => c > 1).length;
+  const badge = cell.closest('tr').querySelector('.repeat-badge');
+  if (!badge) return;
+  if (n === 0) { badge.textContent = '—'; badge.classList.add('low'); }
+  else if (n === 1) { badge.textContent = '1 project'; badge.classList.remove('low'); }
+  else { badge.textContent = n + ' projects'; badge.classList.remove('low'); }
+}
+
 (function initEngineers() {
   const tables = document.querySelectorAll('#tab-overview .section table');
   tables[0].querySelectorAll('td.engineer').forEach(cell => {
     const name = cell.textContent.trim();
-    if (CX_DATA[name]) addExpandButton(cell, filterEngRows(CX_DATA[name]));
+    if (CX_DATA[name]) {
+      const rows = filterEngRows(CX_DATA[name]);
+      addExpandButton(cell, rows);
+      updateRepeatBadge(cell, rows);
+    }
   });
   tables[1].querySelectorAll('td.engineer').forEach(cell => {
     const name = cell.textContent.trim();
-    if (ISA_DATA[name]) addExpandButton(cell, filterEngRows(ISA_DATA[name]));
+    if (ISA_DATA[name]) {
+      const rows = filterEngRows(ISA_DATA[name]);
+      addExpandButton(cell, rows);
+      updateRepeatBadge(cell, rows);
+    }
   });
 })();
 
