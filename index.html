@@ -53,7 +53,7 @@
       border-radius: 10px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.07);
       margin-bottom: 32px;
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid #e5e7eb;
     }
 
@@ -63,6 +63,7 @@
       border-left: 5px solid #cd040b;
       display: flex; align-items: center; gap: 12px;
       background: #fff;
+      border-radius: 10px 10px 0 0;
     }
     .section-header h2 { font-size: 16px; font-weight: 700; color: #111827; }
 
@@ -262,6 +263,7 @@
       background: #fff; border: 1px solid #e5e7eb;
       border-radius: 6px; padding: 8px 12px;
       box-shadow: 0 4px 14px rgba(0,0,0,.10);
+      max-height: 520px; overflow-y: auto;
     }
     .expand-row {
       display: flex; align-items: flex-start;
