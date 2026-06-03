@@ -535,11 +535,11 @@
     <div class="callouts">
       <h3>Key Callouts</h3>
       <ul class="callout-list">
-        <li><strong>Raja Magunta</strong> – 59 CIR rejections (Jan–May); peaked at 26 in April; highest volume</li>
-        <li><strong>Tamara Gil</strong> – 44 CIR rejections; 13 in Feb, 18 in April</li>
-        <li><strong>Allison Schmidt</strong> – 29 rejections; flat in May (7); consistent all months</li>
-        <li><strong>Shennay Hampton – TEK</strong> – 25 total; escalated: 0–2–7–9–7</li>
-        <li><strong>Ashutosh Pandey</strong> – 27 total; front-loaded Jan–Mar; dropped to 0 Apr–May; likely resolved or reassigned</li>
+        <li data-vendor="circet"><strong>Raja Magunta</strong> – 59 CIR rejections (Jan–May); peaked at 26 in April; highest volume</li>
+        <li data-vendor="tek"><strong>Tamara Gil</strong> – 44 CIR rejections; 13 in Feb, 18 in April</li>
+        <li data-vendor="tek"><strong>Allison Schmidt</strong> – 29 rejections; flat in May (7); consistent all months</li>
+        <li data-vendor="tek"><strong>Shennay Hampton – TEK</strong> – 25 total; escalated: 0–2–7–9–7</li>
+        <li data-vendor="circet"><strong>Ashutosh Pandey</strong> – 27 total; front-loaded Jan–Mar; dropped to 0 Apr–May; likely resolved or reassigned</li>
 
 </ul>
     </div>
@@ -730,10 +730,10 @@
     <div class="callouts">
       <h3>Key Callouts</h3>
       <ul class="callout-list">
-        <li><strong>Belem Rios</strong> – 26 ISA rejections (Jan–May); highest volume; steady throughout</li>
-        <li><strong>Mazhar Shahzad</strong> – 20; front-loaded Jan (12), tapering after</li>
-        <li><strong>Victor Durosomo</strong> – 17 total; front-loaded Feb (9), dropped to 0 in May</li>
-        <li><strong>Allison Schmidt</strong> – escalating ISA: 0–0–1–7–3; 11 ISA on top of 29 CIR</li>
+        <li data-vendor="circet"><strong>Belem Rios</strong> – 26 ISA rejections (Jan–May); highest volume; steady throughout</li>
+        <li data-vendor="circet"><strong>Mazhar Shahzad</strong> – 20; front-loaded Jan (12), tapering after</li>
+        <li data-vendor="circet"><strong>Victor Durosomo</strong> – 17 total; front-loaded Feb (9), dropped to 0 in May</li>
+        <li data-vendor="tek"><strong>Allison Schmidt</strong> – escalating ISA: 0–0–1–7–3; 11 ISA on top of 29 CIR</li>
         <li><strong>Volume spread</strong> – Jan=37, Feb=46, Mar=12, Apr=24, May=20; Mar sharp dip then recovering</li>
 
 </ul>
@@ -1993,6 +1993,11 @@ function filterVendor(v, btn) {
   // Show/hide data rows in both overview tables
   document.querySelectorAll('#tab-overview tbody tr[data-vendor]').forEach(tr => {
     tr.style.display = (v === 'all' || tr.dataset.vendor === v) ? '' : 'none';
+  });
+
+  // Show/hide callout bullets
+  document.querySelectorAll('#tab-overview .callout-list li[data-vendor]').forEach(li => {
+    li.style.display = (v === 'all' || li.dataset.vendor === v) ? '' : 'none';
   });
 
   // Recompute grand totals for each overview table
