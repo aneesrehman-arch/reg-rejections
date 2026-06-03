@@ -1109,6 +1109,14 @@
 
 <!-- ═══════════════════════════════════════ TAB 3: REPEAT REJECTIONS ═══════════════════════════════════════ -->
 <div id="tab-repeats" class="tab-panel">
+  <!-- vendor filter -->
+  <div class="vendor-filter">
+    <span>Vendor:</span>
+    <button class="vf-btn active"     onclick="filterRepeatVendor('all',    this)">All</button>
+    <button class="vf-btn"            onclick="filterRepeatVendor('tek',    this)">TEKsystems</button>
+    <button class="vf-btn"            onclick="filterRepeatVendor('circet', this)">Circet</button>
+  </div>
+
   <div class="section">
     <div class="section-header">
       <h2>REG ENG CX — Projects Rejected More Than Once</h2>
@@ -1862,9 +1870,12 @@ const sortedGroups = Object.entries(engGroups).sort((a, b) => {
 
 sortedGroups.forEach(([eng, projects]) => {
   const tbody = eng.includes('(ISA)') ? tbodyIsa : tbodyCx;
+  const _tekEngs = new Set(['Shennay Hampton - TEK', 'Allison Schmidt', 'Tamara Gil']);
+  const _vendor = _tekEngs.has(eng.replace(' (ISA)', '')) ? 'tek' : 'circet';
   // Engineer group header row
   const groupTr = document.createElement('tr');
   groupTr.className = 'eng-group-row';
+  groupTr.dataset.vendor = _vendor;
   const rec = ENG_REC[eng] || '';
   groupTr.innerHTML = `
     <td colspan="2" style="white-space:nowrap">${eng.replace(' (ISA)', '')}</td>
@@ -1896,6 +1907,7 @@ sortedGroups.forEach(([eng, projects]) => {
     // Summary row (no engineer column)
     const tr = document.createElement('tr');
     tr.className = 'proj-header';
+    tr.dataset.vendor = _vendor;
     tr.innerHTML = `
       <td><code style="font-size:11px">${proj.id}</code><span class="chevron">▶</span></td>
       <td><span class="workstep-tag ${wsTag}">${wsShort}</span></td>
@@ -1912,6 +1924,7 @@ sortedGroups.forEach(([eng, projects]) => {
     // Detail row
     const detailTr = document.createElement('tr');
     detailTr.className = 'proj-detail-row';
+    detailTr.dataset.vendor = _vendor;
     const innerHtml = sortedRows.map(r =>
       `<div class="detail-row">
         <span class="detail-month"><span class="month-pill ${monthClass[r.m]||''}">${r.m}</span></span>
@@ -1936,6 +1949,37 @@ sortedGroups.forEach(([eng, projects]) => {
 })();
 
 
+
+
+/* ── Repeat tab vendor filter ── */
+function filterRepeatVendor(v, btn) {
+  document.querySelectorAll('#tab-repeats .vf-btn').forEach(b => {
+    b.classList.remove('active', 'tek-active', 'circ-active');
+  });
+  if (v === 'all')    btn.classList.add('active');
+  if (v === 'tek')    btn.classList.add('tek-active');
+  if (v === 'circet') btn.classList.add('circ-active');
+
+  ['repeat-tbody-cx', 'repeat-tbody-isa'].forEach(id => {
+    const tbody = document.getElementById(id);
+    if (!tbody) return;
+    tbody.querySelectorAll('tr[data-vendor]').forEach(tr => {
+      const show = v === 'all' || tr.dataset.vendor === v;
+      tr.style.display = show ? '' : 'none';
+      // Collapse hidden detail rows
+      if (!show) {
+        tr.classList.remove('expanded', 'open');
+      }
+    });
+
+    // Update badge count for visible eng-group-rows
+    const visibleProjects = [...tbody.querySelectorAll('tr.proj-header[data-vendor]')]
+      .filter(tr => tr.style.display !== 'none').length;
+    const badgeId = id === 'repeat-tbody-cx' ? 'badge-repeat-cx' : 'badge-repeat-isa';
+    const badge = document.getElementById(badgeId);
+    if (badge) badge.textContent = visibleProjects + ' project' + (visibleProjects !== 1 ? 's' : '');
+  });
+}
 
 /* ── Vendor filter ── */
 function filterVendor(v, btn) {
