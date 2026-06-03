@@ -198,10 +198,10 @@ my %known_cx = map { $_ => 1 } (
     "Srinivasan Annamalai", "Keisha Williams"
 );
 
-my %cx_ws_set  = ("CONSTRUCTION_INITIAL_REVIEW" => 1, "ASR" => 1);
+my %cx_ws_set  = ("CONSTRUCTION_INITIAL_REVIEW" => 1);
 my %isa_ws_set = ("CALL_SIGN" => 1);
 
-my %keep_months = map { $_ => 1 } ("February", "March", "April", "May");
+my %keep_months = map { $_ => 1 } ("January", "February", "March", "April", "May");
 
 my %CX_DATA;
 my %ISA_DATA;
