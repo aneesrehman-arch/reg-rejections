@@ -247,6 +247,10 @@ for my $row (@$rrows) {
     # Use comment if non-empty, else reason
     my $c = (length($comment) > 0) ? $comment : $reason;
 
+    # Skip system-generated Update Station Records rows
+    next if $c eq "'Update Station Records' Rejected"
+         || $c eq "'Update Station Records' Approved";
+
     # Workstep abbreviation
     my $ws_abbr = ($ws eq "CONSTRUCTION_INITIAL_REVIEW") ? "CIR"
                 : ($ws eq "ASR")                          ? "ASR"
