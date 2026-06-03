@@ -2001,20 +2001,7 @@ function updateRepeatBadge(cell, rows) {
   });
 })();
 
-/* ── Update grand total repeat count ── */
-(function() {
-  const allRows = Object.values(CX_DATA).flatMap(r => r).filter(r => {
-    const c = r.c.trim();
-    return c !== "'Update Station Records' Rejected" && c !== "'Update Station Records' Approved";
-  });
-  const idCount = {};
-  allRows.forEach(r => { idCount[r.id] = (idCount[r.id] || 0) + 1; });
-  const n = Object.values(idCount).filter(c => c > 1).length;
-  const cell = document.querySelector('#tab-overview .section table:first-of-type .grand-total-row td:last-child');
-  if (cell) cell.textContent = n + ' repeat projects';
-})();
-
- Rejections tab ── */
+/* ── Build Invalid Rejections tab ── */
 (function buildInvalidTab() {
   const mClass = {January:'month-jan',February:'month-feb',March:'month-mar',April:'month-apr',May:'month-may'};
   function mpill(m){ return `<span class="month-pill ${mClass[m]||''}">${m}</span>`; }
