@@ -1804,18 +1804,6 @@ const PROJ_DATES = {};
   index(ISA_DATA);
 })();
 
-// Inject dates into repeatData rows using v2 pool, fallback to DATE_LOOKUP
-repeatData.forEach(p => {
-  const used = {};
-  p.rows.forEach(r => {
-    const key = `${p.id}|${r.m}|${r.ws}`;
-    used[key] = used[key] || 0;
-    const pool = PROJ_DATES[key] || [];
-    r.dt = pool[used[key]] || pool[0] || getDate(p.id, r.c);
-    used[key]++;
-  });
-});
-
 /* ── Build repeat table (after dates injected) ── */
 const tbodyCx  = document.getElementById('repeat-tbody-cx');
 const tbodyIsa = document.getElementById('repeat-tbody-isa');
